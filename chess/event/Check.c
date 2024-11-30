@@ -16,6 +16,8 @@ typedef struct {
     Position pos;           // 현재 위치
     Position possibleMove[MAX_MOVES]; // 이동 가능 경로
     int moveCount;          // 이동 가능 경로 수
+    int moveHistory;        // 이동 횟수
+    int latestMovedTurn;    // 최근 이동 전적, 초기값 : -1, 이동시 진행한 턴 숫자 저장
     bool isAlive;           // 기물이 살아 있는지 여부
 } Piece;
 

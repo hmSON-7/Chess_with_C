@@ -1,43 +1,41 @@
 #include <stdio.h>
 #include <stdbool.h>
-#include <stdlib.h>
-#include <math.h>
 
 #define BOARD_SIZE 8
 #define MAX_MOVES 27
 
-// ì¢Œí‘œ êµ¬ì¡°ì²´
+// ÁÂÇ¥ ±¸Á¶Ã¼
 typedef struct {
     int x;
     int y;
 } Position;
 
 
-// ê¸°ë¬¼ êµ¬ì¡°ì²´
+// ±â¹° ±¸Á¶Ã¼
 typedef struct {
-    char type;    // ê¸°ë¬¼ ìœ í˜• ('K', 'Q', 'R', 'B', 'N', 'P')
-    char color;   // ê¸°ë¬¼ ìƒ‰ìƒ ('W', 'B')
-    Position pos;   // í˜„ì¬ ìœ„ì¹˜
-    Position possibleMove[MAX_MOVES]; // ì´ë™ ê°€ëŠ¥ ê²½ë¡œ
-    int moveCount;  // ì´ë™ ê°€ëŠ¥ ê²½ë¡œ ìˆ˜
-    bool isAlive;   // ê¸°ë¬¼ì´ ì‚´ì•„ ìˆëŠ” ì§€ ì—¬ë¶€
-    bool firstMoveValid;    // ìµœì´ˆ ë‘ ì¹¸ ì´ë™ ì—¬ë¶€
+    char type;    // ±â¹° À¯Çü ('K', 'Q', 'R', 'B', 'N', 'P')
+    char color;   // ±â¹° »ö»ó ('W', 'B')
+    Position pos;   // ÇöÀç À§Ä¡
+    Position possibleMove[MAX_MOVES]; // ÀÌµ¿ °¡´É °æ·Î
+    int moveCount;  // ÀÌµ¿ °¡´É °æ·Î ¼ö
+    bool isAlive;   // ±â¹°ÀÌ »ì¾Æ ÀÖ´Â Áö ¿©ºÎ
+    bool firstMoveValid;    // ÃÖÃÊ µÎ Ä­ ÀÌµ¿ ¿©ºÎ
     int TurnCount;
 } Piece;
 
-// ì²´ìŠ¤íŒ êµ¬ì¡°ì²´
+// Ã¼½ºÆÇ ±¸Á¶Ã¼
 typedef struct {
     char board[BOARD_SIZE][BOARD_SIZE];
     Piece pieces[32];
     Position kingPos[2];
 } ChessBoard;
 
-// ì²´ìŠ¤íŒ ê²½ê³„ í™•ì¸ í•¨ìˆ˜
+// Ã¼½ºÆÇ °æ°è È®ÀÎ ÇÔ¼ö
 bool is_within_board(int x, int y) {
     return x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE;
 }
 
-// ì£¼ì–´ì§„ ìœ„ì¹˜ì— ìˆëŠ” ê¸°ë¬¼ ì°¾ê¸° í•¨ìˆ˜
+// ÁÖ¾îÁø À§Ä¡¿¡ ÀÖ´Â ±â¹° Ã£±â ÇÔ¼ö
 int find_piece_at_position(ChessBoard *board, Position pos) {
     for (int i = 0; i < 32; i++) {
         if (board->pieces[i].pos.x == pos.x && board->pieces[i].pos.y == pos.y) {
@@ -47,7 +45,7 @@ int find_piece_at_position(ChessBoard *board, Position pos) {
     return 0;
 }
 
-// ë‚˜ì´íŠ¸ ì´ë™ ê²€ì¦ í•¨ìˆ˜
+// ³ªÀÌÆ® ÀÌµ¿ °ËÁõ ÇÔ¼ö
 bool is_valid_knight_move(Position from, Position to, ChessBoard *board) {
     int directions[8][2] = {{1, 2}, {2, 1}, {2, -1}, {1, -2}, {-1, 2}, {-2, 1}, {-2, -1}, {-1, -2}};
     for (int i = 0; i < 8; i++) {
@@ -63,14 +61,14 @@ bool is_valid_knight_move(Position from, Position to, ChessBoard *board) {
             int from_piece_valid = find_piece_at_position(board, from);
             int piece_valid = find_piece_at_position(board, to);
             if (piece_valid == 0 || board->pieces[piece_valid].color != board->pieces[from_piece_valid].color) {
-                return true; // ëª©í‘œ ìœ„ì¹˜ê°€ ë¹„ì–´ìˆê±°ë‚˜ ìƒëŒ€ ê¸°ë¬¼ì´ ìˆëŠ” ê²½ìš° ìœ íš¨
+                return true; // ¸ñÇ¥ À§Ä¡°¡ ºñ¾îÀÖ°Å³ª »ó´ë ±â¹°ÀÌ ÀÖ´Â °æ¿ì À¯È¿
             }
         }
     }
-    return false; // ì´ë™í•  ìˆ˜ ì—†ëŠ” ê²½ìš°
+    return false; // ÀÌµ¿ÇÒ ¼ö ¾ø´Â °æ¿ì
 }
 
-// ë‚˜ì´íŠ¸ ì´ë™ í•¨ìˆ˜
+// ³ªÀÌÆ® ÀÌµ¿ ÇÔ¼ö
 void move_knight(ChessBoard *board, Position from, Position to) {
     int knight_index = find_piece_at_position(board, from);
 
@@ -79,49 +77,49 @@ void move_knight(ChessBoard *board, Position from, Position to) {
         board->board[from.y][from.x] = '.';
 
         board->pieces[knight_index].pos = to;
-        printf("ë‚˜ì´íŠ¸ê°€ (%d, %d)ì—ì„œ (%d, %d)ë¡œ ì´ë™í–ˆìŠµë‹ˆë‹¤.\n", from.x, from.y, to.x, to.y);
+        printf("³ªÀÌÆ®°¡ (%d, %d)¿¡¼­ (%d, %d)·Î ÀÌµ¿Çß½À´Ï´Ù.\n", from.x, from.y, to.x, to.y);
 
         board->pieces->TurnCount++;
     }
 }
 
-//ë£© ì´ë™ ê²€ì¦ í•¨ìˆ˜
+//·è ÀÌµ¿ °ËÁõ ÇÔ¼ö
 bool is_valid_rook_move(Position from, Position to, ChessBoard *board) {
-    int directions[4][2] = {{1,0},{-1,0},{0,1},{0,-1}};
+    int directions[4][2] = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
 
-    for(int i = 0; i < 4; i++) {
+    for (int i = 0; i < 4; i++) {
         int x = from.x;
         int y = from.y;
-        int Dx = directions[i][0];
-        int Dy = directions[i][1];
+        int newX = directions[i][0];
+        int newY = directions[i][1];
 
+        // ÇöÀç ¹æÇâÀ¸·Î ÀÌµ¿
+        while (is_within_board(x, y)) {
+            x += newX;
+            y += newY;
 
-        while(!is_within_board(x,y)) {
-            x += Dx;
-            y += Dy;
-
-            if(x == to.x && y == to.y) {
+            // ¸ñÇ¥ À§Ä¡¸¦ ¸¸³­ °æ¿ì
+            if (x == to.x && y == to.y) {
                 int from_piece_index = find_piece_at_position(board, from);
                 int target_piece_index = find_piece_at_position(board, to);
 
-                // ëª©í‘œ ìœ„ì¹˜ê°€ ë¹„ì–´ ìˆê±°ë‚˜ ìƒëŒ€ ê¸°ë¬¼ì´ ìˆëŠ” ê²½ìš° ìœ íš¨
-                if (target_piece_index == 0 || board->pieces[target_piece_index].color != board->pieces[from_piece_index].color) {
+                // ¸ñÇ¥ À§Ä¡°¡ ºñ¾î ÀÖ°Å³ª »ó´ë ±â¹°ÀÌ ÀÖ´Â °æ¿ì À¯È¿
+                if(target_piece_index == 0 || board->pieces[target_piece_index].color != board->pieces[from_piece_index].color) {
                     return 1;
                 }
-
-                else return 0;
             }
 
-            //ê²½ë¡œì— ë‹¤ë¥¸ ê¸°ë¬¼ì´ ìˆëŠ” ê²½ìš° ìœ íš¨í•˜ì§€ ì•ŠìŒ
+            // °æ·Î¿¡ ´Ù¸¥ ±â¹°ÀÌ ÀÖ´Â °æ¿ì À¯È¿ÇÏÁö ¾ÊÀ½
             if (find_piece_at_position(board, (Position){x, y}) != 0) {
-                return 0;
+                break;
             }
         }
-        return 0;
     }
+    return 0; // ¸ğµç ¹æÇâ¿¡¼­ À¯È¿ÇÑ °æ·Î°¡ ¾ø´Â °æ¿ì
 }
 
-// ë£© ì´ë™ í•¨ìˆ˜
+
+// ·è ÀÌµ¿ ÇÔ¼ö
 void move_rook(ChessBoard *board, Position from, Position to) {
     int RookIndex = find_piece_at_position(board, from);
 
@@ -130,17 +128,17 @@ void move_rook(ChessBoard *board, Position from, Position to) {
         board->board[from.y][from.x] = '.';
 
         board->pieces[RookIndex].pos = to;
-        printf("ë‚˜ì´íŠ¸ê°€ (%d, %d)ì—ì„œ (%d, %d)ë¡œ ì´ë™í–ˆìŠµë‹ˆë‹¤.\n", from.x, from.y, to.x, to.y);
+        printf("·èÀÌ (%d, %d)¿¡¼­ (%d, %d)·Î ÀÌµ¿Çß½À´Ï´Ù.\n", from.x, from.y, to.x, to.y);
 
         board->pieces->TurnCount++;
     }
 }
 
-// í° ì´ë™ ê²€ì¦ í•¨ìˆ˜
+// Æù ÀÌµ¿ °ËÁõ ÇÔ¼ö
 bool is_valid_pawn_move(Position from, Position to, ChessBoard *board) {
     int from_piece_index = find_piece_at_position(board, from);
 
-    //ë°±ì˜ 2ì¹¸ ì´ë™ ê²€ì¦ í•¨ìˆ˜
+    //¹éÀÇ 2Ä­ ÀÌµ¿ °ËÁõ ÇÔ¼ö
     if(board->pieces[from_piece_index].color == 'W' && board->pieces[from_piece_index].pos.y == 6) {
         int newY = from.y - 2;
         if(newY == to.y && find_piece_at_position(board, (Position){to.x, newY}) == 0) {
@@ -151,7 +149,7 @@ bool is_valid_pawn_move(Position from, Position to, ChessBoard *board) {
         }
     }
 
-    //í‘ì˜ 2ì¹¸ ì´ë™ ê²€ì¦˜ í•¨ìˆ˜
+    //ÈæÀÇ 2Ä­ ÀÌµ¿ °ËÁò ÇÔ¼ö
     if(board->pieces[from_piece_index].color == 'B' && board->pieces[from_piece_index].pos.y == 1) {
         int newY = from.y + 2;
         if(newY == to.y && find_piece_at_position(board, (Position){to.x, newY}) == 0) {
@@ -162,7 +160,7 @@ bool is_valid_pawn_move(Position from, Position to, ChessBoard *board) {
         }
     }
 
-    //ë°±ì˜ í•œì¹¸ ì´ë™ ê²€ì¦ í•¨ìˆ˜
+    //¹éÀÇ ÇÑÄ­ ÀÌµ¿ °ËÁõ ÇÔ¼ö
     if(board->pieces[from_piece_index].color == 'B') {
         int newY = from.y + 1;
         if(newY == to.y && find_piece_at_position(board, (Position){to.x, newY}) == 0) {
@@ -173,7 +171,7 @@ bool is_valid_pawn_move(Position from, Position to, ChessBoard *board) {
         }
     }
 
-    //ë°±ì˜ ë‘ì¹¸ ì´ë™ ê²€ì¦ í•¨ìˆ˜
+    //¹éÀÇ µÎÄ­ ÀÌµ¿ °ËÁõ ÇÔ¼ö
     if(board->pieces[from_piece_index].color == 'W') {
         int newY = from.y -1;
         if(newY == to.y && find_piece_at_position(board, (Position){to.x, newY}) == 0) {
@@ -184,23 +182,23 @@ bool is_valid_pawn_move(Position from, Position to, ChessBoard *board) {
         }
     }
 
-    // ëŒ€ê°ì„  ê³µê²© ì²˜ë¦¬
+    // ´ë°¢¼± °ø°İ Ã³¸®
     if (board->pieces[from_piece_index].color == 'W') {
-        // ë°± í°ì€ ìœ„ìª½ ëŒ€ê°ì„ ìœ¼ë¡œ ê³µê²© ê°€ëŠ¥
+        // ¹é ÆùÀº À§ÂÊ ´ë°¢¼±À¸·Î °ø°İ °¡´É
         if ((to.x == from.x - 1 || to.x == from.x + 1) && to.y == from.y - 1) {
             int target_piece_index = find_piece_at_position(board, to);
             if (target_piece_index != 0 && board->pieces[target_piece_index].color != board->pieces[from_piece_index].color) {
-                return 1; // ëª©í‘œ ìœ„ì¹˜ì— ìƒëŒ€ ê¸°ë¬¼ì´ ìˆìœ¼ë©´ ìœ íš¨
+                return 1; // ¸ñÇ¥ À§Ä¡¿¡ »ó´ë ±â¹°ÀÌ ÀÖÀ¸¸é À¯È¿
             }
         }
     }
 
     else if (board->pieces[from_piece_index].color == 'B') {
-        // í‘ í°ì€ ì•„ë˜ìª½ ëŒ€ê°ì„ ìœ¼ë¡œ ê³µê²© ê°€ëŠ¥
+        // Èæ ÆùÀº ¾Æ·¡ÂÊ ´ë°¢¼±À¸·Î °ø°İ °¡´É
         if ((to.x == from.x - 1 || to.x == from.x + 1) && to.y == from.y + 1) {
             int target_piece_index = find_piece_at_position(board, to);
             if (target_piece_index != 0 && board->pieces[target_piece_index].color != board->pieces[from_piece_index].color) {
-                return 1; // ëª©í‘œ ìœ„ì¹˜ì— ìƒëŒ€ ê¸°ë¬¼ì´ ìˆìœ¼ë©´ ìœ íš¨
+                return 1; // ¸ñÇ¥ À§Ä¡¿¡ »ó´ë ±â¹°ÀÌ ÀÖÀ¸¸é À¯È¿
             }
         }
     }
@@ -208,7 +206,7 @@ bool is_valid_pawn_move(Position from, Position to, ChessBoard *board) {
     return 0;
 }
 
-//í° ì´ë™ í•¨ìˆ˜
+//Æù ÀÌµ¿ ÇÔ¼ö
 void move_pawn(ChessBoard *board, Position from, Position to) {
     int PawnIndex = find_piece_at_position(board, from);
 
@@ -217,7 +215,117 @@ void move_pawn(ChessBoard *board, Position from, Position to) {
         board->board[from.y][from.x] = '.';
 
         board->pieces[PawnIndex].pos = to;
-        printf("í°ì´ (%d, %d)ì—ì„œ (%d, %d)ë¡œ ì´ë™í–ˆìŠµë‹ˆë‹¤.\n", from.x, from.y, to.x, to.y);
+        printf("ÆùÀÌ (%d, %d)¿¡¼­ (%d, %d)·Î ÀÌµ¿Çß½À´Ï´Ù.\n", from.x, from.y, to.x, to.y);
+
+        board->pieces->TurnCount++;
+    }
+}
+
+// ºñ¼ó ÀÌµ¿ °ËÁõ ÇÔ¼ö
+bool is_valid_bishop_move(Position from, Position to, ChessBoard *board) {
+    int directions[4][2] = {{1,1}, {-1,-1}, {1,-1}, {-1,1}};
+
+    for (int i = 0; i < 4; i++) {
+        int x = from.x;
+        int y = from.y;
+        int newX = directions[i][0];
+        int newY = directions[i][1];
+
+        while (is_within_board(x, y)) {
+            x += newX;
+            y += newY;
+
+            if (x == to.x && y == to.y) {
+                int from_piece_index = find_piece_at_position(board, from);
+                int target_piece_index = find_piece_at_position(board, to);
+
+                // ¸ñÇ¥ À§Ä¡°¡ ºñ¾î ÀÖ°Å³ª »ó´ë ±â¹°ÀÌ ÀÖ´Â °æ¿ì À¯È¿
+                if (target_piece_index == 0 || board->pieces[target_piece_index].color != board->pieces[from_piece_index].color) {
+                    return 1;
+                }
+            }
+
+            // °æ·Î¿¡ ´Ù¸¥ ±â¹°ÀÌ ÀÖ´Â °æ¿ì ÁøÇà ºÒ°¡
+            if (find_piece_at_position(board, (Position){x, y}) != 0) {
+                break;
+            }
+        }
+    }
+    return 0;
+}
+
+//ºñ¼ó ÀÌµ¿ ÇÔ¼ö
+void move_bishop(ChessBoard *board, Position from, Position to) {
+    int Bishop_Index = find_piece_at_position(board, from);
+
+    if (Bishop_Index != '\0' && board->pieces[Bishop_Index].type == 'P') {
+        board->board[to.y][to.x] = board->board[from.y][from.x];
+        board->board[from.y][from.x] = '.';
+
+        board->pieces[Bishop_Index].pos = to;
+        printf("ÆùÀÌ (%d, %d)¿¡¼­ (%d, %d)·Î ÀÌµ¿Çß½À´Ï´Ù.\n", from.x, from.y, to.x, to.y);
+
+        board->pieces->TurnCount++;
+    }
+}
+
+// Äı ÀÌµ¿ °ËÁõ ÇÔ¼ö
+bool is_valid_queen_move(Position from, Position to, ChessBoard *board) {
+    if( is_valid_rook_move(from, to, board) || is_valid_bishop_move(from, to, board)) {
+        return 1;
+    }
+    return 0;
+}
+
+//Äı ÀÌµ¿ ÇÔ¼ö
+void move_queen(ChessBoard *board, Position from, Position to) {
+    int QueenIndex = find_piece_at_position(board, from);
+
+    if (QueenIndex != '\0' && board->pieces[QueenIndex].type == 'Q') {
+        board->board[to.y][to.x] = board->board[from.y][from.x];
+        board->board[from.y][from.x] = '\0';
+
+        board->pieces[QueenIndex].pos = to;
+        printf("ÆùÀÌ (%d, %d)¿¡¼­ (%d, %d)·Î ÀÌµ¿Çß½À´Ï´Ù.\n", from.x, from.y, to.x, to.y);
+
+        board->pieces->TurnCount++;
+    }
+}
+
+// Å· ÀÌµ¿ °ËÁõ ÇÔ¼ö
+bool is_valid_king_move(Position from, Position to, ChessBoard *board) {
+    int directions[8][2] = { {0, 1}, {0, -1}, {-1, 0}, {1, 0}, {-1, 1}, {1, 1}, {-1, -1}, {1, -1}};
+    
+    for (int i = 0; i < 8; i++) {
+        int newX = from.x + directions[i][0];
+        int newY = from.y + directions[i][1];
+
+        int flag = is_within_board(newX, newY);
+        if(flag == 0) {
+            continue;
+        }
+
+        if (newX == to.x && newY == to.y ) {
+            int from_piece_valid = find_piece_at_position(board, from);
+            int piece_valid = find_piece_at_position(board, to);
+            if (piece_valid == 0 || board->pieces[piece_valid].color != board->pieces[from_piece_valid].color) {
+                return 1; // ¸ñÇ¥ À§Ä¡°¡ ºñ¾îÀÖ°Å³ª »ó´ë ±â¹°ÀÌ ÀÖ´Â °æ¿ì À¯È¿
+            }
+        }
+    }
+    return 0; // ÀÌµ¿ÇÒ ¼ö ¾ø´Â °æ¿ì
+}
+
+//Å· ÀÌµ¿ ÇÔ¼ö
+void move_king(ChessBoard *board, Position from, Position to) {
+    int KingIndex = find_piece_at_position(board, from);
+
+    if (KingIndex != '\0' && board->pieces[KingIndex].type == 'K') {
+        board->board[to.y][to.x] = board->board[from.y][from.x];
+        board->board[from.y][from.x] = '\0';
+
+        board->pieces[KingIndex].pos = to;
+        printf("ÆùÀÌ (%d, %d)¿¡¼­ (%d, %d)·Î ÀÌµ¿Çß½À´Ï´Ù.\n", from.x, from.y, to.x, to.y);
 
         board->pieces->TurnCount++;
     }

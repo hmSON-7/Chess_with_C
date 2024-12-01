@@ -1,162 +1,263 @@
 #include <stdio.h>
+#include <stdbool.h>
 #include <stdlib.h>
+#include <conio.h> // getch()를 사용하기 위해 추가
 
-char board[8][8] = {
-                    { 'R' , 'H' , 'C' , 'K' , 'Q' , 'C' , 'H' , 'R' },
-                    { 'P' , 'P' , 'P' , 'P' , 'P' , 'P' , 'P' , 'P' },
-                    { ' ' , ' ' , ' ' , ' ' , ' ' , ' ' , ' ' , ' ' },
-                    { ' ' , ' ' , ' ' , ' ' , ' ' , ' ' , ' ' , ' ' },
-                    { ' ' , ' ' , ' ' , ' ' , ' ' , ' ' , ' ' , ' ' },
-                    { ' ' , ' ' , ' ' , ' ' , ' ' , ' ' , ' ' , ' ' },
-                    { 'p' , 'p' , 'p' , 'p' , 'p' , 'p' , 'p' , 'p' },
-                    { 'r' , 'h' , 'c' , 'k' , 'q' , 'c' , 'h' , 'r' }
-                    };
+#define BOARD_SIZE 8
+#define MAX_PIECES 32
 
+// 좌표 구조체
+typedef struct {
+    int x, y;
+} Position;
 
+// 기물 구조체
+typedef struct {
+    char type;    // 기물 유형 ('K', 'Q', 'R', 'B', 'N', 'P')
+    char color;   // 기물 색상 ('W', 'B')
+    Position pos; // 현재 위치
+    bool isAlive; // 기물이 살아 있는지 여부
+} Piece;
 
-main()
-{
-int  x = 0 ;
-char ch ;
+// 체스판 구조체
+typedef struct {
+    char board[BOARD_SIZE][BOARD_SIZE];
+    Piece pieces[MAX_PIECES];
+    Position kingPos[2]; // 0: 백 킹, 1: 흑 킹
+} ChessBoard;
 
-    printf( "\n\tWELCOME TO CHESS GAME" ) ;
+// 보드 좌표가 유효한지 확인
+bool is_within_board(int x, int y) {
+    return x >= 0 && y >= 0 && x < BOARD_SIZE && y < BOARD_SIZE;
+}
+
+// 특정 좌표에 있는 기물의 인덱스 찾기
+int find_piece_at_position(ChessBoard *board, Position pos) {
+    for (int i = 0; i < MAX_PIECES; i++) {
+        if (board->pieces[i].isAlive &&
+            board->pieces[i].pos.x == pos.x &&
+            board->pieces[i].pos.y == pos.y) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+// 체스판 초기화
+void initialize_board(ChessBoard *board) {
+    char initialBoard[BOARD_SIZE][BOARD_SIZE] = {
+        {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'},
+        {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
+        {'.', '.', '.', '.', '.', '.', '.', '.'},
+        {'.', '.', '.', '.', '.', '.', '.', '.'},
+        {'.', '.', '.', '.', '.', '.', '.', '.'},
+        {'.', '.', '.', '.', '.', '.', '.', '.'},
+        {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'},
+        {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'}
+    };
+
+    int pieceIndex = 0;
+    for (int i = 0; i < BOARD_SIZE; i++) {
+        for (int j = 0; j < BOARD_SIZE; j++) {
+            board->board[i][j] = initialBoard[i][j];
+            if (initialBoard[i][j] != '.') {
+                board->pieces[pieceIndex] = (Piece){
+                    .type = initialBoard[i][j],
+                    .color = (i < 2) ? 'B' : 'W',
+                    .pos = {j, i},
+                    .isAlive = true
+                };
+                if (initialBoard[i][j] == 'K') {
+                    board->kingPos[0] = (Position){j, i}; // 백 킹
+                } else if (initialBoard[i][j] == 'k') {
+                    board->kingPos[1] = (Position){j, i}; // 흑 킹
+                }
+                pieceIndex++;
+            }
+        }
+    }
+}
+
+void display_board(ChessBoard* board) {
+    printf("   ");
+    for (int i = 0; i < BOARD_SIZE; i++)
+        printf("  %d ", i);
+    printf("\n");
+
+    // 0번째 줄에 ---- 추가
+    printf("   ");
+    for (int col = 0; col < BOARD_SIZE; col++)
+        printf("----");
+    printf("-\n");
+
+    for (int row = 0; row < BOARD_SIZE; row++) {
+        printf(" %d ", row);
+        for (int col = 0; col < BOARD_SIZE; col++) {
+            printf("| %c ", board->board[row][col]);
+        }
+        printf("|\n");
+        printf("   ");
+        for (int col = 0; col < BOARD_SIZE; col++)
+            printf("----");
+        printf("-\n");
+    }
+}
+
+// 폰 이동 검증
+bool is_valid_pawn_move(Position from, Position to, ChessBoard *board, char color) {
+    int direction = (color == 'W') ? -1 : 1;
+    int startRow = (color == 'W') ? 6 : 1;
+
+    if (to.x == from.x) { // 직선 이동
+        if (to.y == from.y + direction && board->board[to.y][to.x] == '.') {
+            return true; // 한 칸 전진
+        }
+        if (from.y == startRow && to.y == from.y + 2 * direction &&
+            board->board[to.y][to.x] == '.' && board->board[from.y + direction][to.x] == '.') {
+            return true; // 처음 두 칸 전진
+        }
+    } else if (to.y == from.y + direction &&
+               (to.x == from.x - 1 || to.x == from.x + 1)) { // 대각선 공격
+        int targetIndex = find_piece_at_position(board, to);
+        if (targetIndex != -1 && board->pieces[targetIndex].color != color) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// 이동 검증 함수
+bool validate_move(ChessBoard *board, Position from, Position to, char currentPlayer) {
+    int pieceIndex = find_piece_at_position(board, from);
+    if (pieceIndex == -1) {
+        return false; // 선택한 위치에 기물이 없음
+    }
+
+    Piece *piece = &board->pieces[pieceIndex];
+    if (piece->color != currentPlayer) {
+        return false; // 현재 플레이어의 기물이 아님
+    }
+
+    switch (piece->type) {
+        case 'P': case 'p': return is_valid_pawn_move(from, to, board, piece->color);
+        // 다른 기물 검증 추가 가능
+        default: return false;
+    }
+}
+
+// 기물 이동
+bool move_piece(ChessBoard *board, Position from, Position to, char currentPlayer) {
+    int pieceIndex = find_piece_at_position(board, from);
+    if (pieceIndex == -1 || !validate_move(board, from, to, currentPlayer)) {
+        return false; // 유효하지 않은 이동
+    }
+
+    int targetIndex = find_piece_at_position(board, to);
+    if (targetIndex != -1) {
+        board->pieces[targetIndex].isAlive = false; // 잡힌 기물 처리
+    }
+    board->board[to.y][to.x] = board->board[from.y][from.x];
+    board->board[from.y][from.x] = '.';
+    board->pieces[pieceIndex].pos = to; // 기물 위치 업데이트
+    return true;
+}
+
+// 이동 가능한 좌표 출력
+void display_valid_moves(ChessBoard *board, Position from) {
+    Piece *piece = &board->pieces[find_piece_at_position(board, from)];
+    printf("기물 %c의 이동 가능한 좌표:\n", piece->type);
+
+    for (int x = 0; x < BOARD_SIZE; x++) {
+        for (int y = 0; y < BOARD_SIZE; y++) {
+            Position to = {x, y};
+            if (validate_move(board, from, to, piece->color)) {
+                printf("(%d, %d) ", x, y);
+            }
+        }
+    }
+    printf("\n");
+}
+
+// 플레이어 1의 턴 처리
+void player1(ChessBoard *board) {
+    Position from, to;
+    bool validMove = false;
+
+    while (!validMove) {
+        printf("백 팀의 기물 이동\n");
+        printf("이동할 기물의 위치 (x y): ");
+        scanf("%d %d", &from.x, &from.y);
+
+        display_valid_moves(board, from); // 이동 가능한 좌표 출력
+
+        printf("목표 위치 (x y): ");
+        scanf("%d %d", &to.x, &to.y);
+
+        validMove = move_piece(board, from, to, 'W');
+        if (!validMove) {
+            printf("유효하지 않은 이동입니다. 다시 시도하세요.\n");
+        }
+    }
+}
+
+// 플레이어 2의 턴 처리
+void player2(ChessBoard *board) {
+    Position from, to;
+    bool validMove = false;
+
+    while (!validMove) {
+        printf("흑 팀의 기물 이동\n");
+        printf("이동할 기물의 위치 (x y): ");
+        scanf("%d %d", &from.x, &from.y);
+        display_valid_moves(board, from); // 이동 가능한 좌표 출력
+
+        printf("목표 위치 (x y): ");
+        scanf("%d %d", &to.x, &to.y);
+
+        validMove = move_piece(board, from, to, 'B');
+               if (!validMove) {
+            printf("유효하지 않은 이동입니다. 다시 시도하세요.\n");
+        }
+    }
+}
+
+int main() {
+    ChessBoard board;
+    int turn = 1; // 턴 수 초기화
+    char ch;
+
+    printf("\n\tWELCOME TO CHESS GAME");
     printf("\n\n\t Have fun playing ");
-    printf( "\n\n\t\t han seong" ) ;
-    getch();
-    system( "cls" ) ;
+    printf("\n\n\t\t han seong");
+    getch();  // 키 입력 대기
+    system("cls"); // 화면 지우기
 
- do
- {
- x++ ;
- system( "cls" ) ;
- display();
+    initialize_board(&board); // 체스판 초기화
 
- if( (x%2) == 1 )
- {
-     player1();
- }
- else
- {
-     player2();
- }
+    do {
+        system("cls"); 
+        display_board(&board); 
+        printf("현재 턴: %d\n", turn); 
 
- printf( " \n\nPress Enter To Continue ! \n\n " ) ;
+        if ((turn % 2) == 1) { 
+            player1(&board);
+        } else {
+            player2(&board);
+        }
 
- ch = getch();
- }while( ch == 13 ) ;
+       
+        for (int i = 0; i < 2; i++) {
+            int kingIndex = find_piece_at_position(&board, board.kingPos[i]);
+            if (kingIndex == -1 || !board.pieces[kingIndex].isAlive) {
+                printf("%s 팀이 졌습니다!\n", (i == 0) ? "백" : "흑");
+                break; 
+            }
+        }
 
+        turn++; 
+        printf("\nPress Enter To Continue! \n");
+        ch = getch(); 
+    } while (ch == 13); 
+
+    return 0; // 프로그램 종료
 }
-
-
-void display()
-{
-    int i , j , k ;
-
-    printf( " " ) ;
-    for( i=0 ; i<8 ; i++ ) printf( "    %d" , i ) ; printf( "\n" ) ;
-
-    for( k=0 ; k<8 ; k++ )
-    {
-    printf( "  " ) ;
-    for( i=0 ; i<42 ; i++ ) { printf( "-" ) ; } printf( "\n" ) ; printf( "%d " , k ) ;
-
-    for( j=0 ; j<8 ; j++ ) { printf( "|| %c " , board[k][j] ) ; }
-    printf( "|| \n" ) ;
-    }
-
-    printf( "  " ) ;
-    for( i=0 ; i<42 ; i++ ) { printf( "-" ) ; } printf( "\n" ) ;
-
-}
-
-void change( int r1 , int c1 , int r2 , int c2 )
-{
-    char temp ;
-
-    temp = board[r1][c1] ;
-    board[r1][c1] = board[r2][c2] ;
-    board[r2][c2] = temp ;
-
-}
-
-
-void player1()
-{
-    int p1 , p2 , c1 , r1 , c2 , r2;
-
-    printf( "\nPLAYER 1 - Turn(samll)Case\n" ) ;
-    again1:
-    printf( "\nEnter Position of Element to change ( RC ): " ) ;
-    scanf( "%d" , &p1 ) ;
-
-    c1 = p1 % 10 ;
-    r1 = p1 / 10 ;
-
-     switch( board[r1][c1] )
-    {
-        case 'p': pawnb( r1 , c1 ) ;
-                  break ;
-        case 'r': rook( r1 , c1 ) ;
-                  break ;
-        case 'h': horse( r1 , c1 ) ;
-                  break ;
-        case 'c': camel( r1 , c1 ) ;
-                  break ;
-        case 'k': king( r1 , c1 ) ;
-                  break ;
-        case 'q': queen( r1 , c1 ) ;
-                  break ;
-        default: printf( "Invalid Position ! " ) ; goto again1 ;
-    }
-
-
-    printf( "\nEnter Position of Place to Send ( RC ): " ) ;
-    scanf( "%d" , &p2 ) ;
-
-    c2 = p2 % 10 ;
-    r2 = p2 / 10  ;
-
-
-    change(r1,c1,r2,c2) ;
-}
-
-void player2()
-{
-    int p1 , p2 , c1 , r1 , c2 , r2;
-
-    printf( "\nPLAYER 2 - Turn(big) Case \n") ;
-    again2:
-    printf( "\nEnter Please enter your destination ( RC ): " ) ;
-    scanf( "%d" , &p1 ) ;
-
-    c1 = p1 % 10 ;
-    r1 = p1 / 10 ;
-
-    switch( board[r1][c1] )
-    {
-        case 'P': pawn( r1 , c1 );
-                  break ;
-        case 'R': rook( r1 , c1 ) ;
-                  break ;
-        case 'H': horse( r1 , c1 );
-                  break ;
-        case 'C': camel( r1 , c1 );
-                  break ;
-        case 'K': king( r1 , c1 ) ;
-                  break ;
-        case 'Q': queen( r1 , c1 ) ;
-                  break ;
-        default: printf("Invalid Position ! ") ; goto again2 ;
-    }
-
-
-    printf( "\nPlease enter your destination ( RC ): " ) ;
-    scanf( "%d" , &p2 ) ;
-
-    c2 = p2 % 10 ;
-    r2 = p2 / 10  ;
-
-
-    change(r1,c1,r2,c2) ;
-}
-

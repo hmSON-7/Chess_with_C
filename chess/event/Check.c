@@ -18,14 +18,14 @@ typedef struct {
     int moveCount;          // 이동 가능 경로 수
     int moveHistory;        // 이동 횟수
     int latestMovedTurn;    // 최근 이동 전적, 초기값 : -1, 이동시 진행한 턴 숫자 저장
-    bool isAlive;           // 기물이 살아 있는지 여부
+    bool isAlive;           // 기물이 살아 있는지 여부. 지울 예정
 } Piece;
 
 // 체스판 구조체
 typedef struct {
     char board[BOARD_SIZE][BOARD_SIZE]; // 체스판 배열
-    Piece pieces[32];                  // 총 32개의 기물
-    Position kingPos[2];               // 백 킹과 흑 킹 위치 (index 0: 백, 1: 흑)
+    Piece pieces[32];                  // 총 32개의 기물. 지울 예정
+    Position kingPos[2];               // 백 킹과 흑 킹 위치 (index 0: 백, 1: 흑). 지울 예정
 } ChessBoard;
 
 // 좌표 유효성 검증(지정 좌표가 체스판 내부인가?)

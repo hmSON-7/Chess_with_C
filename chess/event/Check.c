@@ -1,36 +1,49 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 
 #define BOARD_SIZE 8
 #define MAX_MOVES 27
 
 // 좌표 구조체
 typedef struct {
-    int x, y;
+    int y;
+    int x;
 } Position;
 
 // 기물 구조체
 typedef struct {
-    char type;              // 기물 유형 ('K', 'Q', 'R', 'B', 'N', 'P')
+    char type = 'x';              // 기물 유형 ('K', 'Q', 'R', 'B', 'N', 'P')
     char color;             // 기물 색상 ('W', 'B')
-    Position pos;           // 현재 위치
+    Position pos = {-1, -1};           // 현재 위치
     Position possibleMove[MAX_MOVES]; // 이동 가능 경로
-    int moveCount;          // 이동 가능 경로 수
-    int moveHistory;        // 이동 횟수
-    int latestMovedTurn;    // 최근 이동 전적, 초기값 : -1, 이동시 진행한 턴 숫자 저장
-    bool isAlive;           // 기물이 살아 있는지 여부. 지울 예정
+    int moveCount = 0;          // 이동 가능 경로 수
+    int moveHistory = 0;        // 이동 횟수
+    int latestMovedTurn = -1;    // 최근 이동 전적, 초기값 : -1, 이동시 진행한 턴 숫자 저장
 } Piece;
 
 // 체스판 구조체
 typedef struct {
-    char board[BOARD_SIZE][BOARD_SIZE]; // 체스판 배열
-    Piece pieces[32];                  // 총 32개의 기물. 지울 예정
-    Position kingPos[2];               // 백 킹과 흑 킹 위치 (index 0: 백, 1: 흑). 지울 예정
+    Piece board[BOARD_SIZE][BOARD_SIZE];
+    int turn = 0;
 } ChessBoard;
 
 // 좌표 유효성 검증(지정 좌표가 체스판 내부인가?)
 bool is_within_board(int x, int y) {
     return x >= 0 && y >= 0 && x < BOARD_SIZE && y < BOARD_SIZE;
+}
+
+void calculate_move_1(ChessBoard* board, Piece* p, Piece possible_attack[][]) {
+    switch(p->type) {
+        case 'p':
+            int dir = p->color == 'w' ? -1 : 1;
+            int directions[2][2] = {{dir, -1}, {dir, 1}};
+            for(int i=0; i<2; i++) {
+                int newY = p->pos.y + directions[i][0];
+                int newX = p->pos.x + directions[i][1];
+                if(is_within_board(newX, newY)) continue;
+            }
+    }
 }
 
 // 특정 기물의 이동 가능한 경로 계산

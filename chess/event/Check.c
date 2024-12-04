@@ -197,33 +197,22 @@ char* is_checkmate(ChessBoard* board, char playerColor) {
     return "checkmate";
 }
 
-char* is_stalemate(ChessBoard* board, char playerColor, Piece *king) {
-
-}
-
-char* evaluate_stalemate(ChessBoard* board, char playerColor) {
-    char opponentColor = (playerColor == 'W') ? 'B' : 'W';
-    Position king = board->kingPos[playerColor == 'W' ? 0 : 1];
-
-    if (is_king_safe(board, king, opponentColor)) {
-        for (int i = 0; i < board->pieces[0].moveCount; i++) {
-            Position newPos = board->pieces[0].possibleMove[i];
-            if (is_within_board(newPos.x, newPos.y) &&
-                is_king_safe(board, newPos, opponentColor)) {
-                return "None";
-            }
-        }
-
-        // 다른 기물이 이동 가능한지 확인
-        for (int i = 0; i < 32; i++) {
-            Piece* piece = &board->pieces[i];
-            if (piece->color == playerColor && piece->isAlive) {
-                if (piece->moveCount > 0) {
-                    return "None";
-                }
-            }
-        }
-        return "Stalemate";
+char* is_stalemate(ChessBoard* board, Piece *king) {
+    for(int i=0; i<8; i++) {
+        int newY = king->pos.y + king_directions[i][0];
+        int newX = king->pos.x + king_directions[i][1];
+        if(is_within_board(newY, newX)) continue;
+        if(board->board[newY][newX].type != 'x' && board->board[newY][newX].color == king->color) continue;
+        if(!possible_attack(newY, newX)) return "normal";
     }
-    return "Normal";
+
+    for(int i=0; i<BOARD_SIZE; i++) {
+        for(int j=0; j<BOARD_SIZE; j++) {
+            if(board->board[i][j].type == 'x' || board->board[i][j].color != king->color) continue;
+            Piece p = board->board[i][j];
+            if(p.moveCount != 0) return "normal";
+        }
+    }
+
+    return "stalemate";
 }

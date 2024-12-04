@@ -33,94 +33,101 @@ bool is_within_board(int x, int y) {
     return x >= 0 && y >= 0 && x < BOARD_SIZE && y < BOARD_SIZE;
 }
 
-void calculate_move_1(ChessBoard* board, Piece* p, Piece possible_attack[][]) {
+void calculate_move(ChessBoard* board, Piece* p, bool possible_attack[][]) {
     switch(p->type) {
         case 'p':
             int dir = p->color == 'w' ? -1 : 1;
-            int directions[2][2] = {{dir, -1}, {dir, 1}};
+            int pawn_directions[2][2] = {{dir, -1}, {dir, 1}};
             for(int i=0; i<2; i++) {
-                int newY = p->pos.y + directions[i][0];
-                int newX = p->pos.x + directions[i][1];
+                int newY = p->pos.y + pawn_directions[i][0];
+                int newX = p->pos.x + pawn_directions[i][1];
                 if(is_within_board(newX, newY)) continue;
+                if(board->board[newY][newX].type != 'x' || possible_attack[newY][newX]) continue;
+
+                possible_attack[newY][newX] = true;
             }
-    }
-}
-
-// 특정 기물의 이동 가능한 경로 계산
-void calculate_moves(ChessBoard* board, Piece* piece) {
-    piece->moveCount = 0; // 이동 가능한 경로 초기화
-
-    // 방향 설정
-    int directions[8][2] = {
-        {1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {-1, -1}, {1, -1}, {-1, 1}
-    };
-
-    if (piece->type == 'P') { // 폰
-        int forward = (piece->color == 'W') ? -1 : 1;
-        int nx = piece->pos.x + forward;
-        int ny = piece->pos.y;
-
-        // 전진
-        if (is_within_board(nx, ny) && board->board[nx][ny] == '.') {
-            piece->possibleMove[piece->moveCount++] = (Position){nx, ny};
-        }
-
-        // 대각선 공격
-        for (int i = -1; i <= 1; i += 2) {
-            int nx = piece->pos.x + forward;
-            int ny = piece->pos.y + i;
-            if (is_within_board(nx, ny) && board->board[nx][ny] != '.') {
-                piece->possibleMove[piece->moveCount++] = (Position){nx, ny};
-            }
-        }
-    } else if (piece->type == 'R' || piece->type == 'Q') { // 룩, 퀸 (직선 이동)
-        for (int d = 0; d < 4; d++) {
-            int nx = piece->pos.x;
-            int ny = piece->pos.y;
-            while (1) {
-                nx += directions[d][0];
-                ny += directions[d][1];
-                if (!is_within_board(nx, ny)) break;
-                if (board->board[nx][ny] == '.') {
-                    piece->possibleMove[piece->moveCount++] = (Position){nx, ny};
-                } else {
-                    piece->possibleMove[piece->moveCount++] = (Position){nx, ny};
-                    break; // 기물에 막힘
+            return;
+        case 'r':
+            int rook_directions[4][2] = {{-1, 0}, {0, -1}, {1, 0}, {0, 1}};
+            for(int i=0; i<4; i++) {
+                int newX = p->pos.x, newY = p->pos.y;
+                while(1) {
+                    newY += rook_directions[i][0];
+                    newX += rook_directions[i][1];
+                    if(is_within_board(newX, newY)) break;
+                    if(board->board[newY][newX].type != 'x') break;
+                    if(!possible_attack[newY][newX]) possible_attack[newY][newX] = true;
                 }
             }
-        }
-    } else if (piece->type == 'B' || piece->type == 'Q') { // 비숍, 퀸 (대각선 이동)
-        for (int d = 4; d < 8; d++) {
-            int nx = piece->pos.x;
-            int ny = piece->pos.y;
-            while (1) {
-                nx += directions[d][0];
-                ny += directions[d][1];
-                if (!is_within_board(nx, ny)) break;
-                if (board->board[nx][ny] == '.') {
-                    piece->possibleMove[piece->moveCount++] = (Position){nx, ny};
-                } else {
-                    piece->possibleMove[piece->moveCount++] = (Position){nx, ny};
-                    break; // 기물에 막힘
+            return;
+        case 'n':
+            int knight_directions[8][2] = {
+            {-1, -2}, {-2, -1}, {-1, 2}, {-2, 1},
+            {1, -2}, {2, -1}, {1, 2}, {2, 1}
+            };
+            for(int i=0; i<2; i++) {
+                int newY = p->pos.y + knight_directions[i][0];
+                int newX = p->pos.x + knight_directions[i][1];
+                if(is_within_board(newX, newY)) continue;
+                if(board->board[newY][newX].type != 'x' || possible_attack[newY][newX]) continue;
+
+                possible_attack[newY][newX] = true;
+            }
+            return;
+        case 'b':
+            int bishop_directions[4][2] = {{-1, -1}, {1, -1}, {1, 1}, {1, -1}};
+            for(int i=0; i<4; i++) {
+                int newX = p->pos.x, newY = p->pos.y;
+                while(1) {
+                    newY += bishop_directions[i][0];
+                    newX += bishop_directions[i][1];
+                    if(is_within_board(newX, newY)) break;
+                    if(board->board[newY][newX].type != 'x') break;
+                    if(!possible_attack[newY][newX]) possible_attack[newY][newX] = true;
                 }
             }
-        }
-    } else if (piece->type == 'K') { // 킹
-        for (int d = 0; d < 8; d++) {
-            int nx = piece->pos.x + directions[d][0];
-            int ny = piece->pos.y + directions[d][1];
-            if (is_within_board(nx, ny)) {
-                piece->possibleMove[piece->moveCount++] = (Position){nx, ny};
+            return;
+        case 'q':
+            int queen_directions[8][2] = {
+            {-1, -1}, {-1, 0}, {-1, 1}, {0, 1},
+            {1, 1}, {1, 0}, {1, -1}, {0, -1}
+            };
+            for(int i=0; i<8; i++) {
+                int newX = p->pos.x, newY = p->pos.y;
+                while(1) {
+                    newY += queen_directions[i][0];
+                    newX += queen_directions[i][1];
+                    if(is_within_board(newX, newY)) break;
+                    if(board->board[newY][newX].type != 'x') break;
+                    if(!possible_attack[newY][newX]) possible_attack[newY][newX] = true;
+                }
             }
-        }
+            return;
+        case 'k':
+            int king_directions[8][2] = {
+                {-1, -1}, {-1, 0}, {-1, 1}, {0, 1},
+                {1, 1}, {1, 0}, {1, -1}, {0, -1}
+            };
+            for(int i=0; i<2; i++) {
+                int newY = p->pos.y + king_directions[i][0];
+                int newX = p->pos.x + king_directions[i][1];
+                if(is_within_board(newX, newY)) continue;
+                if(board->board[newY][newX].type != 'x' || possible_attack[newY][newX]) continue;
+
+                possible_attack[newY][newX] = true;
+            }
+            return;
+        default:
+            printf("error : 잘못된 기물 선택");
     }
 }
 
 // 모든 기물의 이동 경로를 업데이트
-void update_all_moves(ChessBoard* board) {
-    for (int i = 0; i < 32; i++) {
-        if (board->pieces[i].isAlive) {
-            calculate_moves(board, &board->pieces[i]);
+void update_all_moves(ChessBoard* board, Piece* p, bool possible_attack[][]) {
+    for(int i=0; i<BOARD_SIZE; i++) {
+        for(int j=0; j<BOARD_SIZE; j++) {
+            if(board->board[i][j].type == 'x' || board->board[i][j].color == p->color) continue;
+            calculate_move(board, &board->board[i][j], possible_attack);
         }
     }
 }

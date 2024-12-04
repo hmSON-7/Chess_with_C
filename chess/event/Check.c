@@ -123,29 +123,20 @@ void calculate_move(ChessBoard* board, Piece* p, bool possible_attack[][]) {
 }
 
 // 모든 기물의 이동 경로를 업데이트
-void update_all_moves(ChessBoard* board, Piece* p, bool possible_attack[][]) {
+void update_all_moves(ChessBoard* board, Piece* king, bool possible_attack[][]) {
     for(int i=0; i<BOARD_SIZE; i++) {
         for(int j=0; j<BOARD_SIZE; j++) {
-            if(board->board[i][j].type == 'x' || board->board[i][j].color == p->color) continue;
+            if(board->board[i][j].type == 'x' || board->board[i][j].color == king->color) continue;
             calculate_move(board, &board->board[i][j], possible_attack);
         }
     }
 }
 
-// 킹의 안전 여부 확인
-bool is_king_safe(ChessBoard* board, Position king, char opponentColor) {
-    for (int i = 0; i < 32; i++) {
-        Piece opponent = board->pieces[i];
-        if (opponent.color == opponentColor && opponent.isAlive) {
-            for (int j = 0; j < opponent.moveCount; j++) {
-                if (opponent.possibleMove[j].x == king.x &&
-                    opponent.possibleMove[j].y == king.y) {
-                    return false; // 킹이 위협받음
-                }
-            }
-        }
-    }
-    return true; // 킹이 안전함
+bool is_king_safe_1(ChessBoard* board, Piece* king) {
+    bool possible_attack[BOARD_SIZE][BOARD_SIZE];
+    update_all_moves(board, king, possible_attack);
+    if(possible_attack[king->pos.y][king->pos.x]) return true;
+    return false;
 }
 
 bool simulate_move_and_check_safety(ChessBoard* board, Piece* piece, Position newPos) {

@@ -5,6 +5,8 @@
 #define BOARD_SIZE 8
 #define MAX_MOVES 27
 
+bool possible_attack[BOARD_SIZE][BOARD_SIZE]; // 적 기물의 이동 경로를 저장
+
 // 좌표 구조체
 typedef struct {
     int y;
@@ -33,7 +35,7 @@ bool is_within_board(int x, int y) {
     return x >= 0 && y >= 0 && x < BOARD_SIZE && y < BOARD_SIZE;
 }
 
-void calculate_move(ChessBoard* board, Piece* p, bool possible_attack[][]) {
+void calculate_move(ChessBoard* board, Piece* p) {
     switch(p->type) {
         case 'p':
             int dir = p->color == 'w' ? -1 : 1;
@@ -123,20 +125,24 @@ void calculate_move(ChessBoard* board, Piece* p, bool possible_attack[][]) {
 }
 
 // 모든 기물의 이동 경로를 업데이트
-void update_all_moves(ChessBoard* board, Piece* king, bool possible_attack[][]) {
+void update_all_moves(ChessBoard* board, Piece* king) {
     for(int i=0; i<BOARD_SIZE; i++) {
         for(int j=0; j<BOARD_SIZE; j++) {
             if(board->board[i][j].type == 'x' || board->board[i][j].color == king->color) continue;
-            calculate_move(board, &board->board[i][j], possible_attack);
+            calculate_move(board, &board->board[i][j]);
         }
     }
 }
 
 bool is_king_safe(ChessBoard* board, Piece* king) {
-    bool possible_attack[BOARD_SIZE][BOARD_SIZE];
-    update_all_moves(board, king, possible_attack);
-    if(possible_attack[king->pos.y][king->pos.x]) return true;
-    return false;
+    for(int i=0; i<BOARD_SIZE; i++) {
+        for(int j=0; j<BOARD_SIZE; j++) {
+            possible_attack[i][j] = false;
+        }
+    }
+    update_all_moves(board, king);
+    if(possible_attack[king->pos.y][king->pos.x]) return false;
+    return true;
 }
 
 bool simulate_move_and_check_safety(ChessBoard* board, Piece* piece, Position newPos) {
@@ -157,9 +163,13 @@ bool simulate_move_and_check_safety(ChessBoard* board, Piece* piece, Position ne
 
     return isSafe;
 }
+bool is_checkmate(ChessBoard* board, char playerColor) {
+    if(is_king_safe) return false;
+
+}
 
 char* evaluate_checkmate(ChessBoard* board, char playerColor) {
-    char opponentColor = (playerColor == 'W') ? 'B' : 'W';
+    char opponentColor = playerColor == 'w' ? 'b' : 'w';
     Position king = board->kingPos[playerColor == 'W' ? 0 : 1];
 
     // 킹이 안전하지 않은지 확인

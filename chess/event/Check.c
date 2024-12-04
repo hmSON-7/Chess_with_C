@@ -54,8 +54,8 @@ void calculate_move(ChessBoard* board, Piece* p) {
             for(int i=0; i<2; i++) {
                 int newY = p->pos.y + pawn_directions[i][0];
                 int newX = p->pos.x + pawn_directions[i][1];
-                if(is_within_board(newX, newY)) continue;
-                if(board->board[newY][newX].type != 'x' || possible_attack[newY][newX]) continue;
+                if(!is_within_board(newY, newX) || possible_attack[newY][newX]) continue;
+                if(board->board[newY][newX].type != 'x' && board->board[newY][newX].color == p->color) continue;
 
                 possible_attack[newY][newX] = true;
             }
@@ -66,9 +66,10 @@ void calculate_move(ChessBoard* board, Piece* p) {
                 while(1) {
                     newY += rook_directions[i][0];
                     newX += rook_directions[i][1];
-                    if(is_within_board(newX, newY)) break;
-                    if(board->board[newY][newX].type != 'x') break;
+                    if(is_within_board(newY, newX)) break;
+                    if(board->board[newY][newX].type != 'x' && board->board[newY][newX].color == p->color) break;
                     if(!possible_attack[newY][newX]) possible_attack[newY][newX] = true;
+                    if(board->board[newY][newX].type != 'x') break;
                 }
             }
             return;
@@ -76,8 +77,8 @@ void calculate_move(ChessBoard* board, Piece* p) {
             for(int i=0; i<2; i++) {
                 int newY = p->pos.y + knight_directions[i][0];
                 int newX = p->pos.x + knight_directions[i][1];
-                if(is_within_board(newX, newY)) continue;
-                if(board->board[newY][newX].type != 'x' || possible_attack[newY][newX]) continue;
+                if(!is_within_board(newY, newX) || possible_attack[newY][newX]) continue;
+                if(board->board[newY][newX].type != 'x' && board->board[newY][newX].color == p->color) continue;
 
                 possible_attack[newY][newX] = true;
             }
@@ -88,9 +89,10 @@ void calculate_move(ChessBoard* board, Piece* p) {
                 while(1) {
                     newY += bishop_directions[i][0];
                     newX += bishop_directions[i][1];
-                    if(is_within_board(newX, newY)) break;
-                    if(board->board[newY][newX].type != 'x') break;
+                    if(is_within_board(newY, newX)) break;
+                    if(board->board[newY][newX].type != 'x' && board->board[newY][newX].color == p->color) break;
                     if(!possible_attack[newY][newX]) possible_attack[newY][newX] = true;
+                    if(board->board[newY][newX].type != 'x') break;
                 }
             }
             return;
@@ -100,9 +102,10 @@ void calculate_move(ChessBoard* board, Piece* p) {
                 while(1) {
                     newY += queen_directions[i][0];
                     newX += queen_directions[i][1];
-                    if(is_within_board(newX, newY)) break;
-                    if(board->board[newY][newX].type != 'x') break;
+                    if(is_within_board(newY, newX)) break;
+                    if(board->board[newY][newX].type != 'x' && board->board[newY][newX].color == p->color) break;
                     if(!possible_attack[newY][newX]) possible_attack[newY][newX] = true;
+                    if(board->board[newY][newX].type != 'x') break;
                 }
             }
             return;
@@ -110,8 +113,8 @@ void calculate_move(ChessBoard* board, Piece* p) {
             for(int i=0; i<2; i++) {
                 int newY = p->pos.y + king_directions[i][0];
                 int newX = p->pos.x + king_directions[i][1];
-                if(is_within_board(newX, newY)) continue;
-                if(board->board[newY][newX].type != 'x' || possible_attack[newY][newX]) continue;
+                if(!is_within_board(newY, newX) || possible_attack[newY][newX]) continue;
+                if(board->board[newY][newX].type != 'x' && board->board[newY][newX].color == p->color) continue;
 
                 possible_attack[newY][newX] = true;
             }
@@ -192,6 +195,10 @@ char* is_checkmate(ChessBoard* board, char playerColor) {
     }
 
     return "checkmate";
+}
+
+char* is_stalemate(ChessBoard* board, char playerColor, Piece *king) {
+
 }
 
 char* evaluate_stalemate(ChessBoard* board, char playerColor) {

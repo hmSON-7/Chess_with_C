@@ -132,7 +132,7 @@ void update_all_moves(ChessBoard* board, Piece* king, bool possible_attack[][]) 
     }
 }
 
-bool is_king_safe_1(ChessBoard* board, Piece* king) {
+bool is_king_safe(ChessBoard* board, Piece* king) {
     bool possible_attack[BOARD_SIZE][BOARD_SIZE];
     update_all_moves(board, king, possible_attack);
     if(possible_attack[king->pos.y][king->pos.x]) return true;

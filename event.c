@@ -5,30 +5,30 @@
 #define BOARD_SIZE 8
 #define MAX_MOVES 27
 
-// ì¢Œí‘œ êµ¬ì¡°ì²´
+// ÁÂÇ¥ ±¸Á¶Ã¼
 typedef struct {
     int y;
     int x;
 } Position;
 
-// ê¸°ë¬¼ êµ¬ì¡°ì²´
+// ±â¹° ±¸Á¶Ã¼
 typedef struct {
-    char type = 'x';              // ê¸°ë¬¼ ìœ í˜• ('K', 'Q', 'R', 'B', 'N', 'P')
-    char color;             // ê¸°ë¬¼ ìƒ‰ìƒ ('W', 'B')
-    Position pos = {-1, -1};           // í˜„ì¬ ìœ„ì¹˜
-    Position possibleMove[MAX_MOVES]; // ì´ë™ ê°€ëŠ¥ ê²½ë¡œ
-    int moveCount = 0;          // ì´ë™ ê°€ëŠ¥ ê²½ë¡œ ìˆ˜
-    int moveHistory = 0;        // ì´ë™ íšŸìˆ˜
-    int latestMovedTurn = -1;    // ìµœê·¼ ì´ë™ ì „ì , ì´ˆê¸°ê°’ : -1, ì´ë™ì‹œ ì§„í–‰í•œ í„´ ìˆ«ì ì €ì¥
+    char type = 'x';              // ±â¹° À¯Çü ('K', 'Q', 'R', 'B', 'N', 'P')
+    char color;             // ±â¹° »ö»ó ('W', 'B')
+    Position pos = {-1, -1};           // ÇöÀç À§Ä¡
+    Position possibleMove[MAX_MOVES]; // ÀÌµ¿ °¡´É °æ·Î
+    int moveCount = 0;          // ÀÌµ¿ °¡´É °æ·Î ¼ö
+    int moveHistory = 0;        // ÀÌµ¿ È½¼ö
+    int latestMovedTurn = -1;    // ÃÖ±Ù ÀÌµ¿ ÀüÀû, ÃÊ±â°ª : -1, ÀÌµ¿½Ã ÁøÇàÇÑ ÅÏ ¼ıÀÚ ÀúÀå
 } Piece;
 
-// ì²´ìŠ¤íŒ êµ¬ì¡°ì²´
+// Ã¼½ºÆÇ ±¸Á¶Ã¼
 typedef struct {
     Piece board[BOARD_SIZE][BOARD_SIZE];
     int turn = 0;
 } ChessBoard;
 
-// ì¢Œí‘œ ìœ íš¨ì„± ê²€ì¦(ì§€ì • ì¢Œí‘œê°€ ì²´ìŠ¤íŒ ë‚´ë¶€ì¸ê°€?)
+// ÁÂÇ¥ À¯È¿¼º °ËÁõ(ÁöÁ¤ ÁÂÇ¥°¡ Ã¼½ºÆÇ ³»ºÎÀÎ°¡?)
 bool is_within_board(int y, int x) {
     return x >= 0 && y >= 0 && x < BOARD_SIZE && y < BOARD_SIZE;
 }
@@ -43,12 +43,12 @@ int promotion(ChessBoard *board, Piece *p) {
 
     char *newPieceType = "";
     bool input_flag = false;
-    printf("í•´ë‹¹ í° ê¸°ë¬¼ì„ ë‹¤ë¥¸ ê¸°ë¬¼ë¡œ ìŠ¹ê¸‰ì‹œí‚¬ ìˆ˜ ìˆìŠµë‹ˆë‹¤. ì–´ë–¤ ê¸°ë¬¼ë¡œ ìŠ¹ê¸‰í•˜ì‹œê² ìŠµë‹ˆê¹Œ?\n");
+    printf("ÇØ´ç Æù ±â¹°À» ´Ù¸¥ ±â¹°·Î ½Â±Ş½ÃÅ³ ¼ö ÀÖ½À´Ï´Ù. ¾î¶² ±â¹°·Î ½Â±ŞÇÏ½Ã°Ú½À´Ï±î?\n");
     while(1) {
-        printf("ìŠ¹ê¸‰ ê°€ëŠ¥ ê¸°ë¬¼ : rook(ë£©), knight(ë‚˜ì´íŠ¸), bishop(ë¹„ìˆ), queen(í€¸)");
+        printf("½Â±Ş °¡´É ±â¹° : rook(·è), knight(³ªÀÌÆ®), bishop(ºñ¼ó), queen(Äı)");
         scanf("%s", newPieceType);
 
-        // ë¬¸ìì—´ ë¹„êµë¥¼ í†µí•´ ì…ë ¥ í™•ì¸
+        // ¹®ÀÚ¿­ ºñ±³¸¦ ÅëÇØ ÀÔ·Â È®ÀÎ
         if (strcmp(newPieceType, "rook") == 0 ||
             strcmp(newPieceType, "knight") == 0 ||
             strcmp(newPieceType, "bishop") == 0 ||
@@ -57,25 +57,25 @@ int promotion(ChessBoard *board, Piece *p) {
         }
 
         if(input_flag) break;
-        printf("ì˜ëª»ëœ ì…ë ¥ì…ë‹ˆë‹¤. ì•ˆë‚´ë¥¼ í™•ì¸í•œ í›„ ìŠ¹ê¸‰í•  ê¸°ë¬¼ íƒ€ì…ì„ ì…ë ¥í•´ì£¼ì„¸ìš”.");
+        printf("Àß¸øµÈ ÀÔ·ÂÀÔ´Ï´Ù. ¾È³»¸¦ È®ÀÎÇÑ ÈÄ ½Â±ŞÇÒ ±â¹° Å¸ÀÔÀ» ÀÔ·ÂÇØÁÖ¼¼¿ä.");
     }
 
     p->type = *newPieceType;
 
-    printf("(%d, %d)ì˜ í° ê¸°ë¬¼ì´ %s(ìœ¼)ë¡œ ìŠ¹ê²©í•˜ì˜€ìŠµë‹ˆë‹¤!", p->pos.y, p->pos.x, newPieceType);
+    printf("(%d, %d)ÀÇ Æù ±â¹°ÀÌ %s(À¸)·Î ½Â°İÇÏ¿´½À´Ï´Ù!", p->pos.y, p->pos.x, newPieceType);
     return 1;
 }
 
 int check_possible_en_passant(const ChessBoard *board, Piece *p, int x) {
-    // ë°°ì—´ ë²”ìœ„ ì´ˆê³¼ ë°©ì§€
+    // ¹è¿­ ¹üÀ§ ÃÊ°ú ¹æÁö
     if(x < 0 || x >= BOARD_SIZE) return 0;
 
-    // í•´ë‹¹ ì¹¸ì´ ë¹„ì–´ìˆê±°ë‚˜ ì•„êµ° ê¸°ë¬¼ì´ ì¡´ì¬í•˜ëŠ” ê²½ìš°
+    // ÇØ´ç Ä­ÀÌ ºñ¾îÀÖ°Å³ª ¾Æ±º ±â¹°ÀÌ Á¸ÀçÇÏ´Â °æ¿ì
     if(board->board[p->pos.y][x].type == 'x' || board->board[p->pos.y][x].color == p->color) {
         return 0;
     }
 
-    // ì  í° ê¸°ë¬¼ì´ 2ì¹¸ ì „ì§„í•œ ì§í›„ í„´ì—ë§Œ ì•™íŒŒìƒ ë°œë™ ê°€ëŠ¥
+    // Àû Æù ±â¹°ÀÌ 2Ä­ ÀüÁøÇÑ Á÷ÈÄ ÅÏ¿¡¸¸ ¾ÓÆÄ»ó ¹ßµ¿ °¡´É
     Piece op = board->board[p->pos.y][x];
     if(op.type != 'p' || op.moveHistory != 1 || op.latestMovedTurn != board->turn - 1) {
         return 0;
@@ -84,22 +84,22 @@ int check_possible_en_passant(const ChessBoard *board, Piece *p, int x) {
 }
 
 void en_passant_move(ChessBoard *board, Piece *p, Position to) {
-    // ê¸°ë¬¼ ì´ë™
+    // ±â¹° ÀÌµ¿
     Position current = p->pos;
     p->pos.y += to.y; p->pos.x += to.x;
     board->board[p->pos.y][p->pos.x] = *p;
 
-    // ì  í° ê¸°ë¬¼ ì œê±°
+    // Àû Æù ±â¹° Á¦°Å
     board->board[p->pos.y][p->pos.x + to.x].type = 'x';
     board->board[p->pos.y][p->pos.x + to.x].pos.y = -1;
     board->board[p->pos.y][p->pos.x + to.x].pos.x = -1;
 
-    // ê¸°ì¡´ ìœ„ì¹˜ ì •ë³´ ì œê±°
+    // ±âÁ¸ À§Ä¡ Á¤º¸ Á¦°Å
     board->board[current.y][current.x].type = 'x';
     board->board[current.y][current.x].pos.y = -1;
     board->board[current.y][current.x].pos.x = -1;
 
-    // ì •ë³´ ê°±ì‹ 
+    // Á¤º¸ °»½Å
     board->board[p->pos.y][p->pos.x].moveHistory++;
     board->board[p->pos.y][p->pos.x].latestMovedTurn = board->turn;
 }
@@ -115,10 +115,10 @@ int en_passant(ChessBoard *board, Piece *p) {
     if(!left_flag && !right_flag) return 0;
 
     int color = p->color = 'w' ? -1 : 1;
-    printf("ì•™íŒŒìƒ ì§„í–‰ì´ ê°€ëŠ¥í•©ë‹ˆë‹¤. ì§„í–‰ ê°€ëŠ¥ ë°©í–¥ì€ (");
+    printf("¾ÓÆÄ»ó ÁøÇàÀÌ °¡´ÉÇÕ´Ï´Ù. ÁøÇà °¡´É ¹æÇâÀº (");
     if(left_flag + right_flag == 2) {
-        printf("1: ì™¼ìª½, 2: ì˜¤ë¥¸ìª½)ì…ë‹ˆë‹¤.\n");
-        printf("ì•™íŒŒìƒì„ ë°œë™í•˜ë ¤ë©´ ë°©í–¥ì— ë§ëŠ” ë²ˆí˜¸ë¥¼ ì…ë ¥í•˜ì„¸ìš”. ì•™íŒŒìƒì„ ë°œë™í•˜ì§€ ì•Šìœ¼ë ¤ë©´ 0ì„ ì…ë ¥í•´ì£¼ì„¸ìš”.\n");
+        printf("1: ¿ŞÂÊ, 2: ¿À¸¥ÂÊ)ÀÔ´Ï´Ù.\n");
+        printf("¾ÓÆÄ»óÀ» ¹ßµ¿ÇÏ·Á¸é ¹æÇâ¿¡ ¸Â´Â ¹øÈ£¸¦ ÀÔ·ÂÇÏ¼¼¿ä. ¾ÓÆÄ»óÀ» ¹ßµ¿ÇÏÁö ¾ÊÀ¸·Á¸é 0À» ÀÔ·ÂÇØÁÖ¼¼¿ä.\n");
         while(1) {
             int select;
             scanf("%d", &select);
@@ -131,24 +131,24 @@ int en_passant(ChessBoard *board, Piece *p) {
                     en_passant_move(board, p, {color, 1});
                     return 1;
                 case 0:
-                    printf("ì•™íŒŒìƒ ë°œë™ì„ ì·¨ì†Œí•©ë‹ˆë‹¤. ê¸°ì¡´ ë‹¨ê³„ë¡œ ëŒì•„ê°‘ë‹ˆë‹¤.\n");
+                    printf("¾ÓÆÄ»ó ¹ßµ¿À» Ãë¼ÒÇÕ´Ï´Ù. ±âÁ¸ ´Ü°è·Î µ¹¾Æ°©´Ï´Ù.\n");
                     return 0;
                 default:
-                    printf("ì˜ëª»ëœ ì…ë ¥ì…ë‹ˆë‹¤. ë©”ë‰´ë¥¼ ë‹¤ì‹œ í™•ì¸í•œ ë’¤ ë²ˆí˜¸ë¥¼ ì…ë ¥í•´ì£¼ì„¸ìš”.\n");
+                    printf("Àß¸øµÈ ÀÔ·ÂÀÔ´Ï´Ù. ¸Ş´º¸¦ ´Ù½Ã È®ÀÎÇÑ µÚ ¹øÈ£¸¦ ÀÔ·ÂÇØÁÖ¼¼¿ä.\n");
             }
         }
     }
 
     int dir;
     if(left_flag) {
-        printf("ì™¼ìª½");
+        printf("¿ŞÂÊ");
         dir = -1;
     } else {
-        printf("ì˜¤ë¥¸ìª½");
+        printf("¿À¸¥ÂÊ");
         dir = 1;
     }
-    printf(")ì…ë‹ˆë‹¤.\n");
-    printf("ì•™íŒŒìƒì„ ë°œë™í•˜ë ¤ë©´ 'Y'ë¥¼ ì…ë ¥í•˜ì„¸ìš”. ì•™íŒŒìƒì„ ë°œë™í•˜ì§€ ì•Šìœ¼ë ¤ë©´ 'N'ì„ ì…ë ¥í•´ì£¼ì„¸ìš”.\n");
+    printf(")ÀÔ´Ï´Ù.\n");
+    printf("¾ÓÆÄ»óÀ» ¹ßµ¿ÇÏ·Á¸é 'Y'¸¦ ÀÔ·ÂÇÏ¼¼¿ä. ¾ÓÆÄ»óÀ» ¹ßµ¿ÇÏÁö ¾ÊÀ¸·Á¸é 'N'À» ÀÔ·ÂÇØÁÖ¼¼¿ä.\n");
     while(1) {
         char c;
         scanf("%c", &c);
@@ -159,10 +159,10 @@ int en_passant(ChessBoard *board, Piece *p) {
                 return 1;
             case 'N':
             case 'n':
-                printf("ì•™íŒŒìƒ ë°œë™ì„ ì·¨ì†Œí•©ë‹ˆë‹¤. ê¸°ì¡´ ë‹¨ê³„ë¡œ ëŒì•„ê°‘ë‹ˆë‹¤.\n");
+                printf("¾ÓÆÄ»ó ¹ßµ¿À» Ãë¼ÒÇÕ´Ï´Ù. ±âÁ¸ ´Ü°è·Î µ¹¾Æ°©´Ï´Ù.\n");
                 return 0;
             default :
-                printf("ì˜ëª»ëœ ì…ë ¥ì…ë‹ˆë‹¤. ë©”ë‰´ë¥¼ ë‹¤ì‹œ í™•ì¸í•œ ë’¤ í•´ë‹¹í•˜ëŠ” ì•ŒíŒŒë²³ì„ ì…ë ¥í•´ì£¼ì„¸ìš”.\n");
+                printf("Àß¸øµÈ ÀÔ·ÂÀÔ´Ï´Ù. ¸Ş´º¸¦ ´Ù½Ã È®ÀÎÇÑ µÚ ÇØ´çÇÏ´Â ¾ËÆÄºªÀ» ÀÔ·ÂÇØÁÖ¼¼¿ä.\n");
         }
     }
 }
@@ -170,26 +170,26 @@ int en_passant(ChessBoard *board, Piece *p) {
 void castling_move(ChessBoard *board, Piece *king, int rook_x, int dir) {
     int rook_dir = dir == -2 ? 1 : -1;
 
-    // í‚¹ ê¸°ë¬¼ ì´ë™
+    // Å· ±â¹° ÀÌµ¿
     Position king_current = king->pos;
     king->pos.x += dir;
     board->board[king->pos.y][king->pos.x] = *king;
-    // ê¸°ì¡´ ìœ„ì¹˜ ì •ë³´ ì œê±°
+    // ±âÁ¸ À§Ä¡ Á¤º¸ Á¦°Å
     board->board[king_current.y][king_current.x].type = 'x';
     board->board[king_current.y][king_current.x].pos.y = -1;
     board->board[king_current.y][king_current.x].pos.x = -1;
 
-    // ë£© ê¸°ë¬¼ ì´ë™
+    // ·è ±â¹° ÀÌµ¿
     Position rook_current = {king->pos.y, rook_x};
     Piece rook = board->board[rook_current.y][rook_current.x];
     rook.pos.x = rook_x == 0 ? king->pos.x + 1 : king->pos.x - 1;
     board->board[rook.pos.y][rook.pos.x] = rook;
-    // ê¸°ì¡´ ìœ„ì¹˜ ì •ë³´ ì œê±°
+    // ±âÁ¸ À§Ä¡ Á¤º¸ Á¦°Å
     board->board[rook_current.y][rook_current.x].type = 'x';
     board->board[rook_current.y][rook_current.x].pos.y = -1;
     board->board[rook_current.y][rook_current.x].pos.x = -1;
 
-    // ì •ë³´ ê°±ì‹ 
+    // Á¤º¸ °»½Å
     board->board[king->pos.y][king->pos.x].moveHistory++;
     board->board[rook.pos.y][rook.pos.x].moveHistory++;
     board->board[king->pos.y][king->pos.x].moveHistory++;
@@ -211,7 +211,7 @@ int castling(ChessBoard *board, Piece *p, bool is_checked) {
             Piece target = board->board[current.y][current.x];
             if(target.color != p->color || target.type != 'r') break;
 
-            // targetì´ ì•„êµ° ë£© ê¸°ë¬¼ì„ì„ í™•ì¸
+            // targetÀÌ ¾Æ±º ·è ±â¹°ÀÓÀ» È®ÀÎ
             if(target.moveHistory >= 1) break;
             castling_flag = true;
         }
@@ -221,46 +221,46 @@ int castling(ChessBoard *board, Piece *p, bool is_checked) {
     }
 
     if(!possible_castling[0] && !possible_castling[1]) return 0;
-    printf("í˜„ì¬ í”Œë ˆì´ì–´ '%c'ì˜ í‚¹ ê¸°ë¬¼ì€ ìºìŠ¬ë§ì„ ì§„í–‰í•  ìˆ˜ ìˆìŠµë‹ˆë‹¤.\n", p->color);
+    printf("ÇöÀç ÇÃ·¹ÀÌ¾î '%c'ÀÇ Å· ±â¹°Àº Ä³½½¸µÀ» ÁøÇàÇÒ ¼ö ÀÖ½À´Ï´Ù.\n", p->color);
     if(possible_castling[0] && possible_castling[1]) {
         while(1) {
-            printf("1: ì™¼ìª½, 2: ì˜¤ë¥¸ìª½, 0: ì§„í–‰ ì·¨ì†Œ\n");
-            printf("ìºìŠ¬ë§ì„ ì§„í–‰í•˜ë ¤ë©´ 1ë²ˆ ë˜ëŠ” 2ë²ˆì„, ì·¨ì†Œí•˜ê³  ê¸°ì¡´ ì´ë™ ë°©ì‹ì„ ì„ íƒí•˜ê³  ì‹¶ë‹¤ë©´ 0ë²ˆì„ ì…ë ¥í•˜ì„¸ìš”.\n");
+            printf("1: ¿ŞÂÊ, 2: ¿À¸¥ÂÊ, 0: ÁøÇà Ãë¼Ò\n");
+            printf("Ä³½½¸µÀ» ÁøÇàÇÏ·Á¸é 1¹ø ¶Ç´Â 2¹øÀ», Ãë¼ÒÇÏ°í ±âÁ¸ ÀÌµ¿ ¹æ½ÄÀ» ¼±ÅÃÇÏ°í ½Í´Ù¸é 0¹øÀ» ÀÔ·ÂÇÏ¼¼¿ä.\n");
             int select;
             scanf("%d", &select);
 
             switch(select) {
                 case 1:
                     castling_move(board, p, 0, -2);
-                    printf("ì„±ê³µì ìœ¼ë¡œ ìºìŠ¬ë§ì„ ì§„í–‰í•˜ì˜€ìŠµë‹ˆë‹¤!\n");
+                    printf("¼º°øÀûÀ¸·Î Ä³½½¸µÀ» ÁøÇàÇÏ¿´½À´Ï´Ù!\n");
                     return 1;
                 case 2:
                     castling_move(board, p, BOARD_SIZE - 1, 2);
-                    printf("ì„±ê³µì ìœ¼ë¡œ ìºìŠ¬ë§ì„ ì§„í–‰í•˜ì˜€ìŠµë‹ˆë‹¤!\n");
+                    printf("¼º°øÀûÀ¸·Î Ä³½½¸µÀ» ÁøÇàÇÏ¿´½À´Ï´Ù!\n");
                     return 1;
                 case 0:
-                    printf("ìºìŠ¬ë§ ì§„í–‰ì„ ì·¨ì†Œí•©ë‹ˆë‹¤.\n");
+                    printf("Ä³½½¸µ ÁøÇàÀ» Ãë¼ÒÇÕ´Ï´Ù.\n");
                     return 0;
                 default:
-                    printf("ì˜ëª»ëœ ì…ë ¥ì…ë‹ˆë‹¤. ë©”ë‰´ë¥¼ ë‹¤ì‹œ í™•ì¸í•œ ë’¤ ë²ˆí˜¸ë¥¼ ì…ë ¥í•´ì£¼ì„¸ìš”.\n");
+                    printf("Àß¸øµÈ ÀÔ·ÂÀÔ´Ï´Ù. ¸Ş´º¸¦ ´Ù½Ã È®ÀÎÇÑ µÚ ¹øÈ£¸¦ ÀÔ·ÂÇØÁÖ¼¼¿ä.\n");
             }
         }
     } else {
         int castling_direction;
         int rook_x;
         if(possible_castling[0]) {
-            printf("Y : ì™¼ìª½ìœ¼ë¡œ ì´ë™, ");
+            printf("Y : ¿ŞÂÊÀ¸·Î ÀÌµ¿, ");
             castling_direction = -2;
             rook_x = 0;
         } else {
-            printf("Y : ì˜¤ë¥¸ìª½ìœ¼ë¡œ ì´ë™, ");
+            printf("Y : ¿À¸¥ÂÊÀ¸·Î ÀÌµ¿, ");
             castling_direction = 2;
             rook_x = BOARD_SIZE - 1;
         }
 
-        printf("N : ìºìŠ¬ë§ ì§„í–‰ ì·¨ì†Œ\n");
+        printf("N : Ä³½½¸µ ÁøÇà Ãë¼Ò\n");
         while(1) {
-            printf("ìºìŠ¬ë§ì„ ì§„í–‰í•˜ë ¤ë©´ Y, ì·¨ì†Œí•˜ê³  ê¸°ì¡´ ì´ë™ ë°©ì‹ì„ ì‚¬ìš©í•˜ë ¤ë©´ Nì„ ì…ë ¥í•´ì£¼ì„¸ìš”.\n");
+            printf("Ä³½½¸µÀ» ÁøÇàÇÏ·Á¸é Y, Ãë¼ÒÇÏ°í ±âÁ¸ ÀÌµ¿ ¹æ½ÄÀ» »ç¿ëÇÏ·Á¸é NÀ» ÀÔ·ÂÇØÁÖ¼¼¿ä.\n");
             char c;
             scanf("%c", &c);
 
@@ -268,14 +268,14 @@ int castling(ChessBoard *board, Piece *p, bool is_checked) {
                 case 'Y':
                 case 'y':
                     castling_move(board, p, rook_x, castling_direction);
-                    printf("ì„±ê³µì ìœ¼ë¡œ ìºìŠ¬ë§ì„ ì§„í–‰í•˜ì˜€ìŠµë‹ˆë‹¤!\n");
+                    printf("¼º°øÀûÀ¸·Î Ä³½½¸µÀ» ÁøÇàÇÏ¿´½À´Ï´Ù!\n");
                     return 1;
                 case 'N':
                 case 'n':
-                    printf("ìºìŠ¬ë§ ì§„í–‰ì„ ì·¨ì†Œí•©ë‹ˆë‹¤.\n");
+                    printf("Ä³½½¸µ ÁøÇàÀ» Ãë¼ÒÇÕ´Ï´Ù.\n");
                     return 0;
                 default:
-                    printf("ì˜ëª»ëœ ì…ë ¥ì…ë‹ˆë‹¤. ë©”ë‰´ë¥¼ ë‹¤ì‹œ í™•ì¸í•œ ë’¤ í•´ë‹¹í•˜ëŠ” ì•ŒíŒŒë²³ì„ ì…ë ¥í•´ì£¼ì„¸ìš”.\n");
+                    printf("Àß¸øµÈ ÀÔ·ÂÀÔ´Ï´Ù. ¸Ş´º¸¦ ´Ù½Ã È®ÀÎÇÑ µÚ ÇØ´çÇÏ´Â ¾ËÆÄºªÀ» ÀÔ·ÂÇØÁÖ¼¼¿ä.\n");
             }
         }
     }

@@ -36,7 +36,7 @@ typedef struct {
     int latestMovedTurn = -1;
 } Piece;
 
-// ì²´ìŠ¤íŒ êµ¬ì¡°ì²´
+// Ã¼½ºÆÇ ±¸Á¶Ã¼
 typedef struct {
     Piece board[BOARD_SIZE][BOARD_SIZE];
     int turn = 0;
@@ -120,11 +120,11 @@ void calculate_move(ChessBoard* board, Piece* p) {
             }
             return;
         default:
-            printf("error : ì˜ëª»ëœ ê¸°ë¬¼ ì„ íƒ");
+            printf("error : Àß¸øµÈ ±â¹° ¼±ÅÃ");
     }
 }
 
-// ëª¨ë“  ê¸°ë¬¼ì˜ ì´ë™ ê²½ë¡œë¥¼ ì—…ë°ì´íŠ¸
+// ¸ğµç ±â¹°ÀÇ ÀÌµ¿ °æ·Î¸¦ ¾÷µ¥ÀÌÆ®
 void update_all_moves(ChessBoard* board, Piece* king) {
     for(int i=0; i<BOARD_SIZE; i++) {
         for(int j=0; j<BOARD_SIZE; j++) {

@@ -95,7 +95,7 @@ void is_valid_rook_move(ChessBoard *board, Piece *piece) {
 }
 
 // 폰 이동 검증 함수
-void get_valid_pawn_move(ChessBoard *board, Piece *piece) {
+void is_valid_pawn_move(ChessBoard *board, Piece *piece) {
     piece->moveCount = 0;  // 이동 가능 위치 초기화
 
     // 폰 이동 방향 설정
@@ -159,7 +159,7 @@ void is_valid_bishop_move(ChessBoard *board, Piece *piece) {
 
 
 // 퀸 이동 검증 함수
-void get_valid_queen_move(ChessBoard *board, Piece *piece) {
+void is_valid_queen_move(ChessBoard *board, Piece *piece) {
     piece->moveCount = 0;  // 이동 가능한 위치 초기화
 
     // 퀸의 8방향 탐색
@@ -228,13 +228,13 @@ void display_valid_moves(ChessBoard *board, Position from) {
         is_valid_bishop_move(board, piece);
     }
     else if (piece->type == 'Q') {
-        get_valid_queen_move(board, piece);
+        is_valid_queen_move(board, piece);
     }
     else if (piece->type == 'K') {
         is_valid_king_move(board, piece);
     }
     else if (piece->type == 'P') {
-        get_valid_pawn_move(board, piece);
+        is_valid_pawn_move(board, piece);
     }
 
     // 이동 가능한 위치 출력
@@ -270,13 +270,13 @@ void move_piece(ChessBoard *board, Position from, Position to) {
         is_valid_bishop_move(board, piece);
     }
     else if (piece->type == 'Q') {
-        get_valid_queen_move(board, piece);
+        is_valid_queen_move(board, piece);
     }
     else if (piece->type == 'K') {
         is_valid_king_move(board, piece);
     }
     else if (piece->type == 'P') {
-        get_valid_pawn_move(board, piece);
+        is_valid_pawn_move(board, piece);
     }
 
     // to 위치가 possibleMove 안에 있는지 확인

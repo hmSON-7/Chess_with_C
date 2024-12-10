@@ -1,0 +1,174 @@
+-함수 is_valid_knight_move(Chessboard *Board구조체, Piece  *piece구조체)
+	moveCount 0으로 초기화
+	
+	이동 가능 경우의 수 반복 i 를 0부터 7까지
+		newX = piece->pos.x(x의 위치) 에 이동 가능 경우의 수 추가
+		newY = piece->pos.y(x의 위치) 에 이동 가능 경우의 수 추가
+		
+		만약 (newY,newX)가 체스판 범위 밖이면
+		continue를 사용해서 다음 반복으로 넘어감
+		
+		to_piece = board[newY][newX]라고 할때
+		만약 to_piece->type이 x이거나 to_piece->color(기물 색깔) 이 다를 때
+		piece->possibleMove[piece.moveCount] 의 좌표를 newY, newX 로 바꿔줍니다
+		동시에 piece->moveCount 에 1을 추가해줍니다
+
+-함수 is_valid_king_move(Chessboard *Board구조체, Piece  *piece구조체)
+	moveCount 0으로 초기화
+	
+	이동 가능 경우의 수 반복 i 를 0부터 7까지
+		newX = piece->pos.x(x의 위치) 에 이동 가능 경우의 수 추가
+		newY = piece->pos.y(x의 위치) 에 이동 가능 경우의 수 추가
+		
+		만약 (newY,newX)가 체스판 범위 밖이면
+		continue를 사용해서 다음 반복으로 넘어감
+		
+		to_piece = board[newY][newX]라고 할때
+		만약 to_piece->type이 x이거나 to_piece->color(기물 색깔) 이 다를 때
+		piece->possibleMove[piece.moveCount] 의 좌표를 newY, newX 로 바꿔줍니다
+		동시에 piece->moveCount 에 1을 추가해줍니다
+
+-함수 is_valid_bishop_move(Chessboard *board구조체, Piece *piece 구조체)
+piece->movoCount 구조체 변수 0으로 초기화
+
+비숍은 4가지 대각선 방향으로 이동 가능하므로 이동 방향 i 0부터 3까지 반복
+	dx 에 비숍 이동 방향 4개중 하나 저장
+	dy 에 비숍 이동 방향 4개중 하나 저장
+	x 에 piece->pos.x x의 좌표 저장
+	y 에 piece->pos.y y의 좌표 저장
+
+	반복(이동 후 좌표가 체스판 내부인 경우에 while문 실행)
+		x = x + dx (x좌표 업데이트)
+		y = y + dy (y좌표 업데이트)
+			
+		to_piece = board[y][x] 위치에 있는 기물
+		만약 to_piece->type이 x(기물이 없음) 이거나 to_piece->color(기물의 색깔) 이 piece-> color와 다르면
+		piece->possibleMove[piece->moveCount++] = (Position){y, x} 를 통해 좌표를 y,x에 저장
+		동시에 moveCount 1추가
+		
+		만약 to_piece->type이 x가 아니면
+		반복 종료 후 다음 좌표 반복문 실행
+
+
+-함수 is_valid_rook_move(Chessboard *board구조체, Piece *piece 구조체)
+piece->movoCount 구조체 변수 0으로 초기화
+
+룩 4가지 직선 방향으로 이동 가능하므로 이동 방향 i 0부터 3까지 반복
+	dx 에 룩 이동 방향 4개중 하나 저장
+	dy 에 룩 이동 방향 4개중 하나 저장
+	x 에 piece->pos.x x의 좌표 저장
+	y 에 piece->pos.y y의 좌표 저장
+
+	반복(이동 후 좌표가 체스판 내부인 경우에 while문 실행)
+		x = x + dx (x좌표 업데이트)
+		y = y + dy (y좌표 업데이트)
+			
+		to_piece = board[y][x] 위치에 있는 기물
+		만약 to_piece->type이 x(기물이 없음) 이거나 to_piece->color(기물의 색깔) 이 piece-> color와 다르면
+		piece->possibleMove[piece->moveCount++] = (Position){y, x} 를 통해 좌표를 y,x에 저장
+		동시에 moveCount 1추가
+		
+		만약 to_piece->type이 x가 아니면
+		반복 종료 후 다음 좌표 반복문 실행
+
+-함수 is_valid_queen_move(Chessboard *board구조체, Piece *piece 구조체)
+piece->movoCount 구조체 변수 0으로 초기화
+
+퀸 8가지 직선 및 대각선 방향으로 이동 가능하므로 이동 방향 i 0부터 7까지 반복
+	dx 에 퀸 이동 방향 8개중 하나 저장
+	dy 에 퀸 이동 방향 8개중 하나 저장
+	x 에 piece->pos.x x의 좌표 저장
+	y 에 piece->pos.y y의 좌표 저장
+
+	반복(이동 후 좌표가 체스판 내부인 경우에 while문 실행)
+		x = x + dx (x좌표 업데이트)
+		y = y + dy (y좌표 업데이트)
+			
+		to_piece = board[y][x] 위치에 있는 기물
+		만약 to_piece->type이 x(기물이 없음) 이거나 to_piece->color(기물의 색깔) 이 piece-> color와 다르면
+		piece->possibleMove[piece->moveCount++] = (Position){y, x} 를 통해 좌표를 y,x에 저장
+		동시에 moveCount 1추가
+		
+		만약 to_piece->type이 x가 아니면
+		반복 종료 후 다음 좌표 반복문 실행
+
+
+함수 is_valid_pawn_move(Chessboard *board구조체 Board *piece구조체) 폰 이동 검증 함수
+piece->moveCount = 0으로 초기화
+
+폰의 이동 방향 설정
+기물의 색깔이 'W'이면 
+	direction = -1 (위쪽으로 이동)
+	start_row = 6 (백색 폰의 시작 위치)
+아니면(기물의 색깔이 'B')
+	direction = 1 (아래로 이동)
+	start_row = 1 (흑색 폰의 시작 위치)
+
+x = piece->pos.x(현재 x의 좌표 x에 저장)
+y = piece->pos.y(현재 y의 좌표 y에 저장)
+
+1칸 앞으로 이동
+만약 (y + direction,x)가 체스판 내부가 있고 해당 위치가 비어 있다면
+	이동 가능 위치가 확인될 때마다 possibleMove에 추가혹 moveCount증가
+
+2칸 앞으로 이동
+만약 y가 시작 줄이고
+(y+ 2 * direction, x)가 체스판 내부이고 중간 위치와 최종 위치가 비어 있다면
+	이동 가능 위치가 확인될 때마다 possibleMove에 추가혹 moveCount증가
+
+대각선 공격
+dx가 -1부터 1까지 반복, dx+=2
+	만약 (y + direction, x + dx)가 체스판 내부이면
+	target_piece = board[y+direction][x + dx] 목표 기물 지정
+	
+	만약 해당 위치에 상대 기물이 있으면 이동 가능
+	target_piece의 type이 x(비어 있음이 아니고) 색이 다르면
+	이동 가능 위치가 확인될 때마다 possibleMove에 추가혹 moveCount증가
+
+
+
+함수display_valid_moves(Chessboard * board, Position from)
+Piece *piece = board[from.y][from.x] (출발 위치에 있는 기물 가져오기)
+
+만약 piece->type이 x(기물 없음이면)
+기물 없다는 메시지 출력 후 함수 종료
+
+기물 타입에 따라 이동 검증 함수 호출
+piece->type 이 N,R,B,Q,K,P에 따라 각 기물별 이동 검증 함수 사용
+
+이동 가능한 위치 출력
+만약 piece->moveCount가 0이면 이동 가능 위치가 없습니다 출력
+else
+반복 i를 0부터 moveCount - 1까지 반복
+(possibleMove[i].x,possibleMove[i].y) 계속 출력
+출력 완료시 줄 바꿈
+
+
+
+함수void move_piece(ChessBoard *board, Position from, Position to)
+Piece *piece = &board->board[from.y][from.x] 출발 위치에서 기물 가져오기
+
+만약 piece->type이 x(기물 없음) 이면 해당 위치에 기물이 없습니다 출력
+
+기물의 가능한 이동 위치 계산
+piece->type 이 N,R,B,Q,K,P에 따라 각 기물별 이동 위치 계산 함수 사용
+
+이동 가능 여부 확인
+MoveValid = 0으로 초기화
+반복 i를 0부터 moveCount - 1까지
+만약 piece->possibleMove[i].y와 to.y의 좌표가 같고 piece->possibleMove[i].x와 to.x의 좌표가 같으면
+MoveValid = 1로 초기화
+반복 종료
+
+이동 처리
+만약 MoveValid가 1이면
+Piece movedPiece = *piece; 로 이동할 기물을 복사 후
+movedPiece.pos = to; 로 새로운 위치를 업데이트 하고
+board->board[to.y][to.x] = movedPiece; 로 도착 위치에 기물을 이동시키고
+출발 위치를 초기화 시키고 
+턴수를 1증가시킨다
+이후 기물 이동 메시지 출력
+else: 기물이동이 유효하지 않습니다 출력
+
+
+

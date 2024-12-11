@@ -1,37 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
-
-#define BOARD_SIZE 8
-#define MAX_MOVES 27
-
-// 좌표 구조체
-typedef struct {
-    int y;
-    int x;
-} Position;
-
-// 기물 구조체
-typedef struct {
-    char type = 'x';              // 기물 유형 ('K', 'Q', 'R', 'B', 'N', 'P')
-    char color;             // 기물 색상 ('W', 'B')
-    Position pos = {-1, -1};           // 현재 위치
-    Position possibleMove[MAX_MOVES]; // 이동 가능 경로
-    int moveCount = 0;          // 이동 가능 경로 수
-    int moveHistory = 0;        // 이동 횟수
-    int latestMovedTurn = -1;    // 최근 이동 전적, 초기값 : -1, 이동시 진행한 턴 숫자 저장
-} Piece;
-
-// 체스판 구조체
-typedef struct {
-    Piece board[BOARD_SIZE][BOARD_SIZE];
-    int turn = 0;
-} ChessBoard;
-
-// 좌표 유효성 검증(지정 좌표가 체스판 내부인가?)
-bool is_within_board(int y, int x) {
-    return x >= 0 && y >= 0 && x < BOARD_SIZE && y < BOARD_SIZE;
-}
+#include "chess_utils.h"
 
 int promotion(ChessBoard *board, Piece *p) {
     if(p->color == 'w' && p->pos.y != 0) {

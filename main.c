@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <conio.h> // getch()를 사용하기 위해 추가
+#include "chess_utils.h"
 
 #define BOARD_SIZE 8
 #define MAX_PIECES 32

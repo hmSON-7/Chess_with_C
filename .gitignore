@@ -1,0 +1,19 @@
+# 빌드 결과물
+*.exe
+*.o
+*.a
+*.so
+*.dll
+
+# IDE 임시 파일
+*.layout
+*.depend
+*.layout
+
+# 캐시 및 로그 파일
+*.log
+*.cbTemp*
+
+# 디버깅 정보
+*.gch
+*.pch

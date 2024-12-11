@@ -1,27 +1,7 @@
-`#include <stdio.h>
+#include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
 #include "chess_utils.h"
-
-bool possible_attack[BOARD_SIZE][BOARD_SIZE];
-int rook_directions[4][2] = {{-1, 0}, {0, -1}, {1, 0}, {0, 1}};
-int knight_directions[8][2] = {
-    {-1, -2}, {-2, -1}, {-1, 2}, {-2, 1},
-    {1, -2}, {2, -1}, {1, 2}, {2, 1}
-};
-int bishop_directions[4][2] = {{-1, -1}, {1, -1}, {1, 1}, {1, -1}};
-int queen_directions[8][2] = {
-    {-1, -1}, {-1, 0}, {-1, 1}, {0, 1},
-    {1, 1}, {1, 0}, {1, -1}, {0, -1}
-};
-int king_directions[8][2] = {
-    {-1, -1}, {-1, 0}, {-1, 1}, {0, 1},
-    {1, 1}, {1, 0}, {1, -1}, {0, -1}
-};
-
-bool is_within_board(int y, int x) {
-    return x >= 0 && y >= 0 && x < BOARD_SIZE && y < BOARD_SIZE;
-}
 
 void calculate_move(ChessBoard* board, Piece* p) {
     switch(p->type) {

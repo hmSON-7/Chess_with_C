@@ -3,11 +3,6 @@
 #include <string.h>
 #include "chess_utils.h"
 
-// 좌표 유효성 검증(지정 좌표가 체스판 내부인가?)
-bool is_within_board(int y, int x) {
-    return x >= 0 && y >= 0 && x < BOARD_SIZE && y < BOARD_SIZE;
-}
-
 int promotion(ChessBoard *board, Piece *p) {
     if(p->color == 'w' && p->pos.y != 0) {
         return 0;

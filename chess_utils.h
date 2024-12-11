@@ -13,13 +13,13 @@ typedef struct {
 
 // 기물 구조체
 typedef struct {
-    char type = 'x';              // 기물 유형 ('K', 'Q', 'R', 'B', 'N', 'P')
+    char type;           // 기물 유형 ('K', 'Q', 'R', 'B', 'N', 'P'), 빈 칸 :'x'
     char color;             // 기물 색상 ('W', 'B')
-    Position pos = {-1, -1};           // 현재 위치
+    Position pos;          // 현재 위치
     Position possibleMove[MAX_MOVES]; // 이동 가능 경로
-    int moveCount = 0;          // 이동 가능 경로 수
-    int moveHistory = 0;        // 이동 횟수
-    int latestMovedTurn = -1;    // 최근 이동 전적, 초기값 : -1, 이동시 진행한 턴 숫자 저장
+    int moveCount;       // 이동 가능 경로 수. 초기값 : 0
+    int moveHistory;      // 이동 횟수. 초기값 : 0
+    int latestMovedTurn;    // 최근 이동 전적, 초기값 : -1, 이동시 진행한 턴 숫자 저장
 } Piece;
 
 // 체스판 구조체

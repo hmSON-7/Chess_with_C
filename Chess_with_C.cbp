@@ -37,11 +37,10 @@
 		<Unit filename="chess_move_edited.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="chess_utils.h" />
 		<Unit filename="event.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="is_valid.txt" />
+		<Unit filename="chess_utils.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>

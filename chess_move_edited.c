@@ -1,52 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
-
-#define BOARD_SIZE 8
-#define MAX_MOVES 27
-
-bool possible_attack[BOARD_SIZE][BOARD_SIZE];
-int rook_directions[4][2] = {{-1, 0}, {0, -1}, {1, 0}, {0, 1}};
-int knight_directions[8][2] = {
-    {-1, -2}, {-2, -1}, {-1, 2}, {-2, 1},
-    {1, -2}, {2, -1}, {1, 2}, {2, 1}
-};
-int bishop_directions[4][2] = {{-1, -1}, {1, -1}, {1, 1}, {1, -1}};
-int queen_directions[8][2] = {
-    {-1, -1}, {-1, 0}, {-1, 1}, {0, 1},
-    {1, 1}, {1, 0}, {1, -1}, {0, -1}
-};
-int king_directions[8][2] = {
-    {-1, -1}, {-1, 0}, {-1, 1}, {0, 1},
-    {1, 1}, {1, 0}, {1, -1}, {0, -1}
-};
-
-typedef struct {
-    int y;
-    int x;
-} Position;
-
-typedef struct {
-    char type = 'x';
-    char color;
-    Position pos = {-1, -1};
-    Position possibleMove[MAX_MOVES];
-    int moveCount = 0;
-    int moveHistory = 0;
-    int latestMovedTurn = -1;
-} Piece;
-
-// 체스판 구조체
-typedef struct {
-    Piece board[BOARD_SIZE][BOARD_SIZE];
-    int turn = 0;
-} ChessBoard;
-
-bool is_within_board(int y, int x) {
-    return x >= 0 && y >= 0 && x < BOARD_SIZE && y < BOARD_SIZE;
-}
-
-
+#include "chess_utils.h"
 
 // 나이트 이동 검증 함수
 void is_valid_knight_move(ChessBoard *board, Piece *piece) {

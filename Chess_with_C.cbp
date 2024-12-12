@@ -31,13 +31,16 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="check.c">
+		<Unit filename="chess_display.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="chess_event.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="chess_game_check.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="chess_move_edited.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="event.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="chess_utils.h" />

@@ -5,15 +5,30 @@
 #define BOARD_SIZE 8
 #define MAX_MOVES 27
 
+bool possible_attack[BOARD_SIZE][BOARD_SIZE];
+int rook_directions[4][2] = {{-1, 0}, {0, -1}, {1, 0}, {0, 1}};
+int knight_directions[8][2] = {
+    {-1, -2}, {-2, -1}, {-1, 2}, {-2, 1},
+    {1, -2}, {2, -1}, {1, 2}, {2, 1}
+};
+int bishop_directions[4][2] = {{-1, -1}, {1, -1}, {1, 1}, {1, -1}};
+int queen_directions[8][2] = {
+    {-1, -1}, {-1, 0}, {-1, 1}, {0, 1},
+    {1, 1}, {1, 0}, {1, -1}, {0, -1}
+};
+int king_directions[8][2] = {
+    {-1, -1}, {-1, 0}, {-1, 1}, {0, 1},
+    {1, 1}, {1, 0}, {1, -1}, {0, -1}
+};
+
 // 좌표 구조체
 typedef struct {
-    int y;
-    int x;
+    int y, x;
 } Position;
 
 // 기물 구조체
 typedef struct {
-    char type;           // 기물 유형 ('K', 'Q', 'R', 'B', 'N', 'P'), 빈 칸 :'x'
+    char type;           // 기물 유형 ('K', 'Q', 'R', 'B', 'N', 'P'), 빈 칸 :'.'
     char color;             // 기물 색상 ('W', 'B')
     Position pos;          // 현재 위치
     Position possibleMove[MAX_MOVES]; // 이동 가능 경로
@@ -25,7 +40,7 @@ typedef struct {
 // 체스판 구조체
 typedef struct {
     Piece board[BOARD_SIZE][BOARD_SIZE];
-    int turn = 0;
+    int turn;
 } ChessBoard;
 
 // event.c
@@ -46,17 +61,15 @@ char* is_checkmate(ChessBoard* board, char playerColor);
 char* is_stalemate(ChessBoard* board, Piece *king);
 
 // chess_move_edited.c
-int is_valid_knight_move(Position from, Position to, ChessBoard *board, int knight_directions[][]);
-int is_valid_rook_move(Position from, Position to, ChessBoard *board, int rook_directions[][]);
-int is_valid_pawn_move(Position from, Position to, ChessBoard *board);
-int is_valid_bishop_move(Position from, Position to, ChessBoard *board, int bishop_directions[][]);
-bool is_valid_queen_move(Position from, Position to, ChessBoard *board);
-int is_valid_king_move(Position from, Position to, ChessBoard *board, int king_directions[][]);
+void is_valid_knight_move(ChessBoard *board, Piece *piece);
+void is_valid_rook_move(ChessBoard *board, Piece *piece);
+void is_valid_pawn_move(ChessBoard *board, Piece *piece);
+void is_valid_bishop_move(ChessBoard *board, Piece *piece);
+void is_valid_queen_move(ChessBoard *board, Piece *piece);
+void is_valid_king_move(ChessBoard *board, Piece *piece);
 void display_valid_moves(ChessBoard *board, Position from);
 void move_piece(ChessBoard *board, Position from, Position to);
 
-// display.c
+// chess_display.c
 void initialize_board(ChessBoard *board);
 void display_board(ChessBoard* board);
-void player1(ChessBoard *board);
-void player2(ChessBoard *board);

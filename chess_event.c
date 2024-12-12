@@ -89,17 +89,21 @@ int en_passant(ChessBoard *board, Piece *p) {
     if(left_flag + right_flag == 2) {
         printf("1: 왼쪽, 2: 오른쪽)입니다.\n");
         printf("앙파상을 발동하려면 방향에 맞는 번호를 입력하세요. 앙파상을 발동하지 않으려면 0을 입력해주세요.\n");
+        int select;
         while(1) {
-            int select;
             scanf("%d", &select);
 
             switch(select) {
-                case 1:
-                    en_passant_move(board, p, {color, -1});
-                    return 1;
-                case 2:
-                    en_passant_move(board, p, {color, 1});
-                    return 1;
+                case 1: {
+                        Position targetPos = {p->pos.y + color, p->pos.x - 1};
+                        en_passant_move(board, p, targetPos);
+                        return 1;
+                    }
+                case 2: {
+                        Position targetPos = {p->pos.y + color, p->pos.x + 1};
+                        en_passant_move(board, p, targetPos);
+                        return 1;
+                    }
                 case 0:
                     printf("앙파상 발동을 취소합니다. 기존 단계로 돌아갑니다.\n");
                     return 0;
@@ -124,9 +128,11 @@ int en_passant(ChessBoard *board, Piece *p) {
         scanf("%c", &c);
         switch(c) {
             case 'Y':
-            case 'y':
-                en_passant_move(board, p, {color, dir});
-                return 1;
+            case 'y': {
+                    Position targetPos = {p->pos.y + color, p->pos.x + dir};
+                    en_passant_move(board, p, targetPos);
+                    return 1;
+                }
             case 'N':
             case 'n':
                 printf("앙파상 발동을 취소합니다. 기존 단계로 돌아갑니다.\n");

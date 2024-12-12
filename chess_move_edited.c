@@ -162,47 +162,47 @@ void is_valid_king_move(ChessBoard *board, Piece *piece) {
 
 
 // 기물 이동 가능 위치 표시 함수
-void display_valid_moves(ChessBoard *board, Position from) {
-    Piece *piece = &board->board[from.y][from.x];  // 출발 위치에서 기물 가져오기
+bool display_valid_moves(ChessBoard *board, Position from) {
+    Piece piece = board->board[from.y][from.x];  // 출발 위치에서 기물 가져오기
 
-    if (piece->type == 'x') {
-        printf("해당 위치에 기물이 없습니다.\n");
-        return;
+    if (piece.type == '.') {
+        printf("해당 위치에 기물이 없습니다. 좌표를 다시 입력해주세요.\n");
+        return false;
     }
 
-    printf("기물 '%c' 색(%c) (%d, %d)의 이동 가능한 위치:\n", piece->type, piece->color, from.x, from.y);
+    printf("기물 '%c' 색(%c) (%d, %d)의 이동 가능한 위치:\n", piece.type, piece.color, from.x, from.y);
 
     // 기물 타입별로 해당 검증 함수 호출
-    if (piece->type == 'N') {
-        is_valid_knight_move(board, piece);
+    if (piece.type == 'n') {
+        is_valid_knight_move(board, &piece);
     }
-    else if (piece->type == 'R') {
-        is_valid_rook_move(board, piece);
+    else if (piece.type == 'r') {
+        is_valid_rook_move(board, &piece);
     }
-    else if (piece->type == 'B') {
-        is_valid_bishop_move(board, piece);
+    else if (piece.type == 'b') {
+        is_valid_bishop_move(board, &piece);
     }
-    else if (piece->type == 'Q') {
-        is_valid_queen_move(board, piece);
+    else if (piece.type == 'q') {
+        is_valid_queen_move(board, &piece);
     }
-    else if (piece->type == 'K') {
-        is_valid_king_move(board, piece);
+    else if (piece.type == 'k') {
+        is_valid_king_move(board, &piece);
     }
-    else if (piece->type == 'P') {
-        is_valid_pawn_move(board, piece);
+    else if (piece.type == 'p') {
+        is_valid_pawn_move(board, &piece);
     }
 
     // 이동 가능한 위치 출력
-    if (piece->moveCount == 0) {
-        printf("이동 가능한 위치가 없습니다.\n");
+    if (piece.moveCount == 0) {
+        printf("이동 가능한 위치가 없습니다. 다른 기물을 선택해주세요.\n");
+        return false;
     }
 
-    else {
-        for (int i = 0; i < piece->moveCount; i++) {
-            printf("(%d, %d) ", piece->possibleMove[i].x, piece->possibleMove[i].y);
-        }
-        printf("\n");
+    for (int i = 0; i < piece.moveCount; i++) {
+        printf("(%d, %d) ", piece.possibleMove[i].y, piece.possibleMove[i].x);
     }
+    printf("\n");
+    return true;
 }
 
 // 이동 함수

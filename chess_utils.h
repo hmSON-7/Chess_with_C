@@ -60,7 +60,7 @@ void is_valid_pawn_move(ChessBoard *board, Piece *piece);
 void is_valid_bishop_move(ChessBoard *board, Piece *piece);
 void is_valid_queen_move(ChessBoard *board, Piece *piece);
 void is_valid_king_move(ChessBoard *board, Piece *piece);
-void display_valid_moves(ChessBoard *board, Position from);
+bool display_valid_moves(ChessBoard *board, Position from);
 void move_piece(ChessBoard *board, Position from, Position to);
 
 // chess_display.c

@@ -22,7 +22,7 @@ int king_directions[8][2] = {
 void calculate_move(ChessBoard* board, Piece* p) {
     switch(p->type) {
         case 'p':
-            int dir = p->color == 'w' ? -1 : 1;
+            int dir = (p->color == 'w') ? -1 : 1;
             int pawn_directions[2][2] = {{dir, -1}, {dir, 1}};
             for(int i=0; i<2; i++) {
                 int newY = p->pos.y + pawn_directions[i][0];
@@ -148,19 +148,19 @@ Piece* find_king(ChessBoard* board, char currentPlayer) {
     }
 }
 
-char* is_checkmate(ChessBoard* board, currentPlayer) {
+char* is_checkmate(ChessBoard* board, char currentPlayer) {
     Piece* king = find_king(board, currentPlayer);
     if(is_king_safe(board, king)) return "normal";
     for(int i=0; i<8; i++) {
         int newY = king->pos.y + king_directions[i][0];
         int newX = king->pos.x + king_directions[i][1];
-        if(is_within_board(newY, newX) || board->board[newY][newX].color == playerColor) continue;
+        if(is_within_board(newY, newX) || board->board[newY][newX].color == currentPlayer) continue;
         if(!possible_attack[newY][newX]) return "check";
     }
 
     for(int i=0; i<BOARD_SIZE; i++) {
         for(int j=0; j<BOARD_SIZE; j++) {
-            if(board->board[i][j].type == 'x' || board->board[i][j].color != playerColor) continue;
+            if(board->board[i][j].type == 'x' || board->board[i][j].color != currentPlayer) continue;
             if(board->board[i][j].type == 'k') continue;
             bool is_safety = simulate_move_and_check_safety(board, &board->board[i][j], king);
             if(is_safety) return "check";
@@ -170,14 +170,14 @@ char* is_checkmate(ChessBoard* board, currentPlayer) {
     return "checkmate";
 }
 
-char* is_stalemate(ChessBoard* board, Piece *king) {
+char* is_stalemate(ChessBoard* board, char currentPlayer) {
     Piece* king = find_king(board, currentPlayer);
     for(int i=0; i<8; i++) {
         int newY = king->pos.y + king_directions[i][0];
         int newX = king->pos.x + king_directions[i][1];
         if(is_within_board(newY, newX)) continue;
         if(board->board[newY][newX].type != 'x' && board->board[newY][newX].color == king->color) continue;
-        if(!possible_attack(newY, newX)) return "normal";
+        if(!possible_attack[newY][newX]) return "normal";
     }
 
     for(int i=0; i<BOARD_SIZE; i++) {

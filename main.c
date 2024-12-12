@@ -75,22 +75,7 @@ bool move_piece(ChessBoard *board, Position from, Position to, char currentPlaye
     return true;
 }
 
-// 이동 가능한 좌표 출력
-void display_valid_moves(ChessBoard *board, Position from) {
-    Piece *piece = &board->pieces[find_piece_at_position(board, from)];
-    printf("기물 %c의 이동 가능한 좌표:\n", piece->type);
-
-    for (int x = 0; x < BOARD_SIZE; x++) {
-        for (int y = 0; y < BOARD_SIZE; y++) {
-            Position to = {x, y};
-            if (validate_move(board, from, to, piece->color)) {
-                printf("(%d, %d) ", x, y);
-            }
-        }
-    }
-    printf("\n");
-}
-void player1(ChessBoard *board) {
+void player1(ChessBoard *board, bool is_checked) {
     Position from, to;
     bool validMove = false;
 
@@ -99,24 +84,24 @@ void player1(ChessBoard *board) {
         printf("이동할 기물의 위치 (x y): ");
         scanf("%d %d", &from.x, &from.y);
 
-        display_valid_moves(board, from);
+        if(!display_valid_moves(board, from)) continue;
 
-        Piece selectedPiece = board->board[from.y][from.x]; // 2차원 배열 접근
+        Piece *selectedPiece = &board->board[from.y][from.x]; // 2차원 배열 접근
 
-        if (selectedPiece.type == 'K' && selectedPiece.moveHistory == 0) {
-            bool complete_castling = castling(board, &selectedPiece, false);
+        if (selectedPiece->type == 'k' && selectedPiece->moveHistory == 0 && !is_checked) {
+            bool complete_castling = castling(board, selectedPiece, is_checked);
             if (complete_castling) break;
         }
 
-        if (selectedPiece.type == 'P') {
-            bool complete_en_passant = en_passant(board, &selectedPiece);
+        if (selectedPiece->type == 'p') {
+            bool complete_en_passant = en_passant(board, selectedPiece);
             if (complete_en_passant) break;
         }
 
         printf("목표 위치 (x y): ");
         scanf("%d %d", &to.x, &to.y);
 
-        validMove = move_piece(board, from, to, 'W');
+        validMove = move_piece(board, from, to, 'w');
         if (!validMove) {
             printf("유효하지 않은 이동입니다. 다시 시도하세요.\n");
         }
@@ -128,7 +113,7 @@ void player1(ChessBoard *board) {
     }
 }
 
-void player2(ChessBoard *board) {
+void player2(ChessBoard *board, bool is_checked) {
     Position from, to;
     bool validMove = false;
 
@@ -136,24 +121,25 @@ void player2(ChessBoard *board) {
         printf("흑 팀의 기물 이동\n");
         printf("이동할 기물의 위치 (x y): ");
         scanf("%d %d", &from.x, &from.y);
-        display_valid_moves(board, from);
 
-        Piece selectedPiece = board->board[from.y][from.x]; // 2차원 배열 접근
+        if(!display_valid_moves(board, from)) continue;
 
-        if (selectedPiece.type == 'k' && selectedPiece.moveHistory == 0) {
-            bool complete_castling = castling(board, &selectedPiece, false);
+        Piece *selectedPiece = &board->board[from.y][from.x]; // 2차원 배열 접근
+
+        if (selectedPiece->type == 'k' && selectedPiece->moveHistory == 0 && !is_checked) {
+            bool complete_castling = castling(board, selectedPiece, is_checked);
             if (complete_castling) break;
         }
 
-        if (selectedPiece.type == 'p') {
-            bool complete_en_passant = en_passant(board, &selectedPiece);
+        if (selectedPiece->type == 'p') {
+            bool complete_en_passant = en_passant(board, selectedPiece);
             if (complete_en_passant) break;
         }
 
         printf("목표 위치 (x y): ");
         scanf("%d %d", &to.x, &to.y);
 
-        validMove = move_piece(board, from, to, 'B');
+        validMove = move_piece(board, from, to, 'b');
         if (!validMove) {
             printf("유효하지 않은 이동입니다. 다시 시도하세요.\n");
         }
@@ -180,10 +166,13 @@ int main(){
     system("cls"); // 화면 지우기
 
     initialize_board(&board); // 체스판 초기화
-    int turn = board.turn; // 턴 수 초기화
+    int turn;
+    bool is_checked;
 
     do {
         system("cls");
+        turn = board.turn;
+        is_checked = false;
         display_board(&board);
         printf("현재 턴: %d\n", turn);
 
@@ -196,53 +185,34 @@ int main(){
             return 0; // 게임 종료
         }
         if (strcmp(gameFlag, "check") == 0) {
-            printf("경고: 현재 %s 팀이 체크 상태입니다!\n", currentPlayer == 'w' ? "백" : "흑");
+            printf("경고: 현재 %s 플레이어가 체크 상태입니다!\n", currentPlayer == 'w' ? "백" : "흑");
+            is_checked = true;
         }
 
-        // 스테일메이트 상태 확인
-        char* drawFlag = is_stalemate(&board, currentPlayer);
-        if (strcmp(drawFlag, "stalemate") == 0) {
-            display_game_result(&board, currentPlayer, &gameFlag);
-            return 0; // 게임 종료
+        if(!is_checked) {
+            // 스테일메이트 상태 확인
+            char* drawFlag = is_stalemate(&board, currentPlayer);
+            if (strcmp(drawFlag, "stalemate") == 0) {
+                display_game_result(&board, currentPlayer, &gameFlag);
+                return 0; // 게임 종료
+            }
         }
 
         // 플레이어의 턴 처리
         if ((turn % 2) == 1) {
-            player1(&board);
+            player1(&board, is_checked);
         } else {
-            player2(&board);
+            player2(&board, is_checked);
         }
 
-
-
-	// 양파상 확인
-	for (int i = 0; i < MAX_PIECES; i++) {
-	    if (board.pieces[i].color == currentPlayer) {
-	        Piece* pawn = board->pieces[i];
-	        if (check_possible_en_passant(board, pawn, pawn->pos.x - 1) || check_possible_en_passant(board, pawn, pawn->pos.x + 1)) {
-	            en_passant(board, pawn); // 양파상 실행
-	            break;
-	        }
-	    }
-	}
-
-	// 캐슬링 확인
-	Piece* kingForCastling = board->board[board.kingPos[currentPlayer == 'W' ? 0 : 1].y][board.kingPos[currentPlayer == 'W' ? 0 : 1].x];
-	bool is_checked = is_king_in_check(board, currentPlayer);
-	if (castling(board, kingForCastling, is_checked)) {
-	    printf("캐슬링이 성공적으로 진행되었습니다.\n");
-	}
-
-	// 킹이 죽었는지 확인
-	for (int i = 0; i < 2; i++) {
-	    Position kingPos = board.kingPos[i];
-	    if (board.board[kingPos.y][kingPos.x].type == '.') {
-	        printf("%s 팀이 졌습니다!\n", (i == 0) ? "백" : "흑");
-	        break;
-	    }
-	}
-
-
+        // 킹이 죽었는지 확인
+        for (int i = 0; i < 2; i++) {
+            Position kingPos = board.kingPos[i];
+            if (board.board[kingPos.y][kingPos.x].type == '.') {
+                printf("%s 팀이 졌습니다!\n", (i == 0) ? "백" : "흑");
+                break;
+            }
+        }
 
         // 게임 종료 여부 확인
         do {
@@ -268,7 +238,7 @@ int main(){
         }
 
         // 턴 수 증가
-        turn++;
+        board.turn++;
 
     } while (ch1 == 13); // Enter 키가 눌릴 때까지 반복
 

@@ -207,7 +207,7 @@ int main(){
 
         // 킹이 죽었는지 확인
         char opponent = currentPlayer == 'w' ? 'b' : 'w';
-        if(find_king(&board, opponent) == null) {
+        if(find_king(&board, opponent) == NULL) {
             display_game_result(&board, currentPlayer, "blunder");
             return 0; // 게임 종료
         }

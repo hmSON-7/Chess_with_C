@@ -146,6 +146,7 @@ Piece* find_king(ChessBoard* board, char currentPlayer) {
             }
         }
     }
+    return null;
 }
 
 char* is_checkmate(ChessBoard* board, char currentPlayer) {

@@ -67,12 +67,17 @@ void display_game_result(ChessBoard *board, char currentPlayer, char *result) {
     if(strcmp(result, "checkmate") == 0) {
         system("cls");
         display_board(board);
-        printf("%s 팀이 체크메이트 당했습니다!\n", currentPlayer == 'w' ? "백" : "흑");
+        printf("%s 플레이어가 체크메이트 당했습니다!\n", currentPlayer == 'w' ? "백" : "흑");
         printf("게임을 종료합니다.\n");
     } else if(strcmp(result, "stalemate") == 0) {
         system("cls");
         display_board(board);
         printf("게임이 스테일메이트 상태입니다! 무승부입니다.\n");
+        printf("게임을 종료합니다.\n");
+    } else if(strcmp(result, "blunder") == 0) {
+        system("cls");
+        dusplay_board(board);
+        printf("%s 플레이어의 치명적인 블런더로 스스로 왕을 내어줍니다.", currentPlayer == 'w' ? "백" : "흑");
         printf("게임을 종료합니다.\n");
     } else {
         printf("\n\n====== 잘못된 접근입니다! ======\n\n");

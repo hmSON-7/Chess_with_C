@@ -193,7 +193,7 @@ int main(){
             // 스테일메이트 상태 확인
             char* drawFlag = is_stalemate(&board, currentPlayer);
             if (strcmp(drawFlag, "stalemate") == 0) {
-                display_game_result(&board, currentPlayer, &gameFlag);
+                display_game_result(&board, currentPlayer, &drawFlag);
                 return 0; // 게임 종료
             }
         }
@@ -206,12 +206,10 @@ int main(){
         }
 
         // 킹이 죽었는지 확인
-        for (int i = 0; i < 2; i++) {
-            Position kingPos = board.kingPos[i];
-            if (board.board[kingPos.y][kingPos.x].type == '.') {
-                printf("%s 팀이 졌습니다!\n", (i == 0) ? "백" : "흑");
-                break;
-            }
+        char opponent = currentPlayer == 'w' ? 'b' : 'w';
+        if(find_king(&board, opponent) == null) {
+            display_game_result(&board, currentPlayer, "blunder");
+            return 0; // 게임 종료
         }
 
         // 게임 종료 여부 확인

@@ -167,9 +167,8 @@ void player2(ChessBoard *board) {
 
 
 // 메인 함수
-int main() {
+int main(){
     ChessBoard board;
-    int turn = 1; // 턴 수 초기화
     char ch1;
 
     printf("\n\tWELCOME TO CHESS GAME");
@@ -181,38 +180,31 @@ int main() {
     system("cls"); // 화면 지우기
 
     initialize_board(&board); // 체스판 초기화
+    int turn = board.turn; // 턴 수 초기화
 
     do {
         system("cls");
         display_board(&board);
         printf("현재 턴: %d\n", turn);
 
-        char currentPlayer = (turn % 2 == 1) ? 'W' : 'B';
+        char currentPlayer = (turn % 2 == 1) ? 'w' : 'b';
 
-        // 현재 플레이어의 킹 위치 가져오기
-	Position kingPos = (currentPlayer == 'W') ? (Position){4, 0} : (Position){4, 7}; // 각 팀의 킹 초기 위치
-	Piece *king = board->board[kingPos.y][kingPos.x]; // 2차원 배열 접근
+        // 체크메이트 상태 확인
+        char* gameFlag = is_checkmate(&board, currentPlayer);
+        if (strcmp(gameFlag, "checkmate") == 0) {
+            display_game_result(&board, currentPlayer, &gameFlag);
+            return 0; // 게임 종료
+        }
+        if (strcmp(gameFlag, "check") == 0) {
+            printf("경고: 현재 %s 팀이 체크 상태입니다!\n", currentPlayer == 'w' ? "백" : "흑");
+        }
 
-	// 체크메이트 상태 확인
-	char* gameFlag = is_checkmate(board, king);
-	if (strcmp(gameFlag, "checkmate") == 0) {
-	    system("cls");
-	    display_board(board);
-	    printf("%s 팀이 체크메이트 당했습니다!\n", currentPlayer == 'W' ? "흑" : "백");
-	    printf("게임을 종료합니다.\n");
-	return 0; // 게임 종료
-	} else if (strcmp(gameFlag, "check") == 0) {
-	    printf("경고: 현재 %s 팀이 체크 상태입니다!\n", currentPlayer == 'W' ? "백" : "흑");
-	}
-
-	// 스테일메이트 상태 확인
-	char* drawFlag = is_stalemate(board, king);
-	if (strcmp(drawFlag, "stalemate") == 0) {
-	    system("cls");
-	    display_board(board);
-	    printf("게임이 스테일메이트 상태입니다! 무승부입니다.\n");
-	    return 0; // 게임 종료
-	}
+        // 스테일메이트 상태 확인
+        char* drawFlag = is_stalemate(&board, currentPlayer);
+        if (strcmp(drawFlag, "stalemate") == 0) {
+            display_game_result(&board, currentPlayer, &gameFlag);
+            return 0; // 게임 종료
+        }
 
         // 플레이어의 턴 처리
         if ((turn % 2) == 1) {

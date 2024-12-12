@@ -3,6 +3,22 @@
 #include <string.h>
 #include "chess_utils.h"
 
+bool possible_attack[BOARD_SIZE][BOARD_SIZE];
+int rook_directions[4][2] = {{-1, 0}, {0, -1}, {1, 0}, {0, 1}};
+int knight_directions[8][2] = {
+    {-1, -2}, {-2, -1}, {-1, 2}, {-2, 1},
+    {1, -2}, {2, -1}, {1, 2}, {2, 1}
+};
+int bishop_directions[4][2] = {{-1, -1}, {1, -1}, {1, 1}, {1, -1}};
+int queen_directions[8][2] = {
+    {-1, -1}, {-1, 0}, {-1, 1}, {0, 1},
+    {1, 1}, {1, 0}, {1, -1}, {0, -1}
+};
+int king_directions[8][2] = {
+    {-1, -1}, {-1, 0}, {-1, 1}, {0, 1},
+    {1, 1}, {1, 0}, {1, -1}, {0, -1}
+};
+
 void calculate_move(ChessBoard* board, Piece* p) {
     switch(p->type) {
         case 'p':
@@ -98,8 +114,7 @@ bool is_king_safe(ChessBoard* board, Piece* king) {
         }
     }
     update_all_moves(board, king);
-    if(possible_attack[king->pos.y][king->pos.x]) return false;
-    return true;
+    return !possible_attack[king->pos.y][king->pos.x];
 }
 
 bool simulate_move_and_check_safety(ChessBoard* board, Piece* p, Piece* king) {
@@ -123,17 +138,18 @@ bool simulate_move_and_check_safety(ChessBoard* board, Piece* p, Piece* king) {
     return false;
 }
 
-char* is_checkmate(ChessBoard* board, char playerColor) {
-    Piece* king = 0;
+Piece* find_king(ChessBoard* board, char currentPlayer) {
     for(int i=0; i<BOARD_SIZE; i++) {
         for(int j=0; j<BOARD_SIZE; j++) {
             if(board->board[i][j].color && board->board[i][j].type == 'k') {
-                king = &board->board[i][j];
-                break;
+                return &board->board[i][j];
             }
-            if(king != 0) break;
         }
     }
+}
+
+char* is_checkmate(ChessBoard* board, currentPlayer) {
+    Piece* king = find_king(board, currentPlayer);
     if(is_king_safe(board, king)) return "normal";
     for(int i=0; i<8; i++) {
         int newY = king->pos.y + king_directions[i][0];
@@ -155,6 +171,7 @@ char* is_checkmate(ChessBoard* board, char playerColor) {
 }
 
 char* is_stalemate(ChessBoard* board, Piece *king) {
+    Piece* king = find_king(board, currentPlayer);
     for(int i=0; i<8; i++) {
         int newY = king->pos.y + king_directions[i][0];
         int newX = king->pos.x + king_directions[i][1];

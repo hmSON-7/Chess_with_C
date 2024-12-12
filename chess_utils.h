@@ -1,25 +1,17 @@
-#include <stdio.h>
+#ifndef CHESS_UTILS_H
+#define CHESS_UTILS_H
+
 #include <stdbool.h>
-#include <string.h>
 
 #define BOARD_SIZE 8
 #define MAX_MOVES 27
 
-bool possible_attack[BOARD_SIZE][BOARD_SIZE];
-int rook_directions[4][2] = {{-1, 0}, {0, -1}, {1, 0}, {0, 1}};
-int knight_directions[8][2] = {
-    {-1, -2}, {-2, -1}, {-1, 2}, {-2, 1},
-    {1, -2}, {2, -1}, {1, 2}, {2, 1}
-};
-int bishop_directions[4][2] = {{-1, -1}, {1, -1}, {1, 1}, {1, -1}};
-int queen_directions[8][2] = {
-    {-1, -1}, {-1, 0}, {-1, 1}, {0, 1},
-    {1, 1}, {1, 0}, {1, -1}, {0, -1}
-};
-int king_directions[8][2] = {
-    {-1, -1}, {-1, 0}, {-1, 1}, {0, 1},
-    {1, 1}, {1, 0}, {1, -1}, {0, -1}
-};
+extern bool possible_attack[BOARD_SIZE][BOARD_SIZE];
+extern int rook_directions[4][2];
+extern int knight_directions[8][2];
+extern int bishop_directions[4][2];
+extern int queen_directions[8][2];
+extern int king_directions[8][2];
 
 // ÁÂÇ¥ ±¸Á¶Ã¼
 typedef struct {
@@ -57,8 +49,9 @@ void calculate_move(ChessBoard* board, Piece* p);
 void update_all_moves(ChessBoard* board, Piece* king);
 bool is_king_safe(ChessBoard* board, Piece* king);
 bool simulate_move_and_check_safety(ChessBoard* board, Piece* p, Piece* king);
-char* is_checkmate(ChessBoard* board, char playerColor);
-char* is_stalemate(ChessBoard* board, Piece *king);
+Piece* find_king(ChessBoard* board, char currentPlayer);
+char* is_checkmate(ChessBoard* board, char currentPlayer);
+char* is_stalemate(ChessBoard* board, char currentPlayer);
 
 // chess_move_edited.c
 void is_valid_knight_move(ChessBoard *board, Piece *piece);
@@ -72,4 +65,7 @@ void move_piece(ChessBoard *board, Position from, Position to);
 
 // chess_display.c
 void initialize_board(ChessBoard *board);
-void display_board(ChessBoard* board);
+void display_board(ChessBoard *board);
+void display_game_result(ChessBoard *board, char currentPlayer, char *result);
+
+#endif // CHESS_UTILS_H

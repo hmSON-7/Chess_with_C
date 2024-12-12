@@ -3,32 +3,23 @@
 #include <string.h>
 #include "chess_utils.h"
 
-bool possible_attack[BOARD_SIZE][BOARD_SIZE];
-int rook_directions[4][2] = {{-1, 0}, {0, -1}, {1, 0}, {0, 1}};
-int knight_directions[8][2] = {
-    {-1, -2}, {-2, -1}, {-1, 2}, {-2, 1},
-    {1, -2}, {2, -1}, {1, 2}, {2, 1}
-};
-int bishop_directions[4][2] = {{-1, -1}, {1, -1}, {1, 1}, {1, -1}};
-int queen_directions[8][2] = {
-    {-1, -1}, {-1, 0}, {-1, 1}, {0, 1},
-    {1, 1}, {1, 0}, {1, -1}, {0, -1}
-};
-int king_directions[8][2] = {
-    {-1, -1}, {-1, 0}, {-1, 1}, {0, 1},
-    {1, 1}, {1, 0}, {1, -1}, {0, -1}
-};
+bool possible_attack[BOARD_SIZE][BOARD_SIZE] = {0};
 
 void calculate_move(ChessBoard* board, Piece* p) {
+    if(p->type == '.') {
+        return;
+    }
+
+    int dir;
     switch(p->type) {
         case 'p':
-            int dir = (p->color == 'w') ? -1 : 1;
+            dir = (p->color == 'w') ? -1 : 1;
             int pawn_directions[2][2] = {{dir, -1}, {dir, 1}};
             for(int i=0; i<2; i++) {
                 int newY = p->pos.y + pawn_directions[i][0];
                 int newX = p->pos.x + pawn_directions[i][1];
                 if(!is_within_board(newY, newX) || possible_attack[newY][newX]) continue;
-                if(board->board[newY][newX].type != 'x' && board->board[newY][newX].color == p->color) continue;
+                if(board->board[newY][newX].type != '.' && board->board[newY][newX].color == p->color) continue;
 
                 possible_attack[newY][newX] = true;
             }
@@ -40,9 +31,9 @@ void calculate_move(ChessBoard* board, Piece* p) {
                     newY += rook_directions[i][0];
                     newX += rook_directions[i][1];
                     if(is_within_board(newY, newX)) break;
-                    if(board->board[newY][newX].type != 'x' && board->board[newY][newX].color == p->color) break;
+                    if(board->board[newY][newX].type != '.' && board->board[newY][newX].color == p->color) break;
                     if(!possible_attack[newY][newX]) possible_attack[newY][newX] = true;
-                    if(board->board[newY][newX].type != 'x') break;
+                    if(board->board[newY][newX].type != '.') break;
                 }
             }
             return;
@@ -51,7 +42,7 @@ void calculate_move(ChessBoard* board, Piece* p) {
                 int newY = p->pos.y + knight_directions[i][0];
                 int newX = p->pos.x + knight_directions[i][1];
                 if(!is_within_board(newY, newX) || possible_attack[newY][newX]) continue;
-                if(board->board[newY][newX].type != 'x' && board->board[newY][newX].color == p->color) continue;
+                if(board->board[newY][newX].type != '.' && board->board[newY][newX].color == p->color) continue;
 
                 possible_attack[newY][newX] = true;
             }
@@ -63,9 +54,9 @@ void calculate_move(ChessBoard* board, Piece* p) {
                     newY += bishop_directions[i][0];
                     newX += bishop_directions[i][1];
                     if(is_within_board(newY, newX)) break;
-                    if(board->board[newY][newX].type != 'x' && board->board[newY][newX].color == p->color) break;
+                    if(board->board[newY][newX].type != '.' && board->board[newY][newX].color == p->color) break;
                     if(!possible_attack[newY][newX]) possible_attack[newY][newX] = true;
-                    if(board->board[newY][newX].type != 'x') break;
+                    if(board->board[newY][newX].type != '.') break;
                 }
             }
             return;
@@ -76,9 +67,9 @@ void calculate_move(ChessBoard* board, Piece* p) {
                     newY += queen_directions[i][0];
                     newX += queen_directions[i][1];
                     if(is_within_board(newY, newX)) break;
-                    if(board->board[newY][newX].type != 'x' && board->board[newY][newX].color == p->color) break;
+                    if(board->board[newY][newX].type != '.' && board->board[newY][newX].color == p->color) break;
                     if(!possible_attack[newY][newX]) possible_attack[newY][newX] = true;
-                    if(board->board[newY][newX].type != 'x') break;
+                    if(board->board[newY][newX].type != '.') break;
                 }
             }
             return;
@@ -87,7 +78,7 @@ void calculate_move(ChessBoard* board, Piece* p) {
                 int newY = p->pos.y + king_directions[i][0];
                 int newX = p->pos.x + king_directions[i][1];
                 if(!is_within_board(newY, newX) || possible_attack[newY][newX]) continue;
-                if(board->board[newY][newX].type != 'x' && board->board[newY][newX].color == p->color) continue;
+                if(board->board[newY][newX].type != '.' && board->board[newY][newX].color == p->color) continue;
 
                 possible_attack[newY][newX] = true;
             }
@@ -101,7 +92,7 @@ void calculate_move(ChessBoard* board, Piece* p) {
 void update_all_moves(ChessBoard* board, Piece* king) {
     for(int i=0; i<BOARD_SIZE; i++) {
         for(int j=0; j<BOARD_SIZE; j++) {
-            if(board->board[i][j].type == 'x' || board->board[i][j].color == king->color) continue;
+            if(board->board[i][j].type == '.' || board->board[i][j].color == king->color) continue;
             calculate_move(board, &board->board[i][j]);
         }
     }
@@ -125,7 +116,7 @@ bool simulate_move_and_check_safety(ChessBoard* board, Piece* p, Piece* king) {
         if (!is_within_board(targetPos.y, targetPos.x) || board->board[targetPos.y][targetPos.x].color == p->color) continue;
 
         Piece capturedPiece = board->board[targetPos.y][targetPos.x];
-        board->board[currentPos.y][currentPos.x].type = 'x';
+        board->board[currentPos.y][currentPos.x].type = '.';
         board->board[targetPos.y][targetPos.x] = *p;
         p->pos = targetPos;
         if (is_king_safe(board, king)) is_safe = true;
@@ -161,7 +152,7 @@ char* is_checkmate(ChessBoard* board, char currentPlayer) {
 
     for(int i=0; i<BOARD_SIZE; i++) {
         for(int j=0; j<BOARD_SIZE; j++) {
-            if(board->board[i][j].type == 'x' || board->board[i][j].color != currentPlayer) continue;
+            if(board->board[i][j].type == '.' || board->board[i][j].color != currentPlayer) continue;
             if(board->board[i][j].type == 'k') continue;
             bool is_safety = simulate_move_and_check_safety(board, &board->board[i][j], king);
             if(is_safety) return "check";
@@ -177,13 +168,13 @@ char* is_stalemate(ChessBoard* board, char currentPlayer) {
         int newY = king->pos.y + king_directions[i][0];
         int newX = king->pos.x + king_directions[i][1];
         if(is_within_board(newY, newX)) continue;
-        if(board->board[newY][newX].type != 'x' && board->board[newY][newX].color == king->color) continue;
+        if(board->board[newY][newX].type != '.' && board->board[newY][newX].color == king->color) continue;
         if(!possible_attack[newY][newX]) return "normal";
     }
 
     for(int i=0; i<BOARD_SIZE; i++) {
         for(int j=0; j<BOARD_SIZE; j++) {
-            if(board->board[i][j].type == 'x' || board->board[i][j].color != king->color) continue;
+            if(board->board[i][j].type == '.' || board->board[i][j].color != king->color) continue;
             Piece p = board->board[i][j];
             if(p.moveCount != 0) return "normal";
         }

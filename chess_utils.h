@@ -36,7 +36,6 @@ typedef struct {
 } ChessBoard;
 
 // event.c
-bool is_within_board(int y, int x);
 int promotion(ChessBoard *board, Piece *p);
 int check_possible_en_passant(const ChessBoard *board, Piece *p, int x);
 void en_passant_move(ChessBoard *board, Piece *p, Position to);
@@ -54,6 +53,7 @@ char* is_checkmate(ChessBoard* board, char currentPlayer);
 char* is_stalemate(ChessBoard* board, char currentPlayer);
 
 // chess_move_edited.c
+bool is_within_board(int y, int x);
 void is_valid_knight_move(ChessBoard *board, Piece *piece);
 void is_valid_rook_move(ChessBoard *board, Piece *piece);
 void is_valid_pawn_move(ChessBoard *board, Piece *piece);
@@ -61,7 +61,7 @@ void is_valid_bishop_move(ChessBoard *board, Piece *piece);
 void is_valid_queen_move(ChessBoard *board, Piece *piece);
 void is_valid_king_move(ChessBoard *board, Piece *piece);
 bool display_valid_moves(ChessBoard *board, Position from);
-void move_piece(ChessBoard *board, Position from, Position to);
+bool move_piece(ChessBoard *board, Position from, Position to, char currentPlayer);
 
 // chess_display.c
 void initialize_board(ChessBoard *board);

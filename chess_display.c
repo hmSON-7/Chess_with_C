@@ -76,7 +76,7 @@ void display_game_result(ChessBoard *board, char currentPlayer, char *result) {
         printf("게임을 종료합니다.\n");
     } else if(strcmp(result, "blunder") == 0) {
         system("cls");
-        dusplay_board(board);
+        display_board(board);
         printf("%s 플레이어의 치명적인 블런더로 스스로 왕을 내어줍니다.", currentPlayer == 'w' ? "백" : "흑");
         printf("게임을 종료합니다.\n");
     } else {

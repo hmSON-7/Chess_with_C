@@ -181,11 +181,16 @@ void is_valid_king_move(ChessBoard *board, Piece *piece) {
 
 
 // 기물 이동 가능 위치 표시 함수
-bool display_valid_moves(ChessBoard *board, Position from) {
+bool display_valid_moves(ChessBoard *board, Position from, char currentPlayer) {
     Piece *piece = &board->board[from.y][from.x];  // 출발 위치에서 기물 가져오기
 
     if (piece->type == '.') {
         printf("해당 위치에 기물이 없습니다. 좌표를 다시 입력해주세요.\n");
+        return false;
+    }
+
+    if (piece->color != currentPlayer) {
+        printf("상대 기물을 선택할 수 없습니다. 좌표를 다시 입력해주세요.\n");
         return false;
     }
 

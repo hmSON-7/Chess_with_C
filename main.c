@@ -13,7 +13,7 @@ void player1(ChessBoard *board, bool is_checked) {
         printf("이동할 기물의 위치 (y x): ");
         scanf("%d %d", &from.y, &from.x);
 
-        if(!display_valid_moves(board, from)) continue;
+        if(!display_valid_moves(board, from, 'w')) continue;
 
         Piece *selectedPiece = &board->board[from.y][from.x]; // 2차원 배열 접근
 
@@ -51,7 +51,7 @@ void player2(ChessBoard *board, bool is_checked) {
         printf("이동할 기물의 위치 (y x): ");
         scanf("%d %d", &from.y, &from.x);
 
-        if(!display_valid_moves(board, from)) continue;
+        if(!display_valid_moves(board, from, 'b')) continue;
 
         Piece *selectedPiece = &board->board[from.y][from.x]; // 2차원 배열 접근
 

@@ -132,7 +132,7 @@ bool simulate_move_and_check_safety(ChessBoard* board, Piece* p, Piece* king) {
 Piece* find_king(ChessBoard* board, char currentPlayer) {
     for(int i=0; i<BOARD_SIZE; i++) {
         for(int j=0; j<BOARD_SIZE; j++) {
-            if(board->board[i][j].color && board->board[i][j].type == 'k') {
+            if(board->board[i][j].color == currentPlayer && board->board[i][j].type == 'k') {
                 return &board->board[i][j];
             }
         }

@@ -13,6 +13,7 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
+					<Add option="-std=c99" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -30,14 +31,18 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
+			<Add option="-std=c99" />
 		</Compiler>
-		<Unit filename="check.c">
+		<Unit filename="chess_display.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="chess_event.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="chess_game_check.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="chess_move_edited.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="event.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="chess_utils.h" />

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
+#include <conio.h>
 #include "chess_utils.h"
 
 int promotion(ChessBoard *board, Piece *p) {
@@ -105,6 +106,7 @@ int en_passant(ChessBoard *board, Piece *p) {
             case 'N':
             case 'n':
                 printf("앙파상 발동을 취소합니다. 기존 단계로 돌아갑니다.\n");
+                getch();
                 return 0;
             default :
                 printf("잘못된 입력입니다. 메뉴를 다시 확인한 뒤 해당하는 알파벳을 입력해주세요.\n");
@@ -113,7 +115,7 @@ int en_passant(ChessBoard *board, Piece *p) {
 }
 
 void castling_move(ChessBoard *board, Piece *king, int rook_x, int dir) {
-    int rook_dir = dir == -2 ? 1 : -1;
+    int rook_dir = (dir == -2) ? 1 : -1;
 
     // 킹 기물 이동
     Piece *newKing = &board->board[king->pos.y][king->pos.x + dir];
@@ -168,7 +170,11 @@ int castling(ChessBoard *board, Piece *p, bool is_checked) {
     }
 
     if(!possible_castling[0] && !possible_castling[1]) return 0;
+
     printf("현재 플레이어 '%c'의 킹 기물은 캐슬링을 진행할 수 있습니다.\n", p->color);
+    int castling_direction;
+    int rook_x;
+
     if(possible_castling[0] && possible_castling[1]) {
         while(1) {
             printf("1: 왼쪽, 2: 오른쪽, 0: 진행 취소\n");
@@ -180,21 +186,23 @@ int castling(ChessBoard *board, Piece *p, bool is_checked) {
                 case 1:
                     castling_move(board, p, 0, -2);
                     printf("성공적으로 캐슬링을 진행하였습니다!\n");
+                    getch();
                     return 1;
                 case 2:
                     castling_move(board, p, BOARD_SIZE - 1, 2);
+                    getch();
                     printf("성공적으로 캐슬링을 진행하였습니다!\n");
+
                     return 1;
                 case 0:
                     printf("캐슬링 진행을 취소합니다.\n");
+                    getch();
                     return 0;
                 default:
                     printf("잘못된 입력입니다. 메뉴를 다시 확인한 뒤 번호를 입력해주세요.\n");
             }
         }
     } else {
-        int castling_direction;
-        int rook_x;
         if(possible_castling[0]) {
             printf("Y : 왼쪽으로 이동, ");
             castling_direction = -2;

@@ -19,12 +19,12 @@ void player1(ChessBoard *board, bool is_checked) {
 
         if (selectedPiece->type == 'k' && selectedPiece->moveHistory == 0 && !is_checked) {
             bool complete_castling = castling(board, selectedPiece, is_checked);
-            if (complete_castling) break;
+            if (complete_castling) return;
         }
 
         if (selectedPiece->type == 'p') {
             bool complete_en_passant = en_passant(board, selectedPiece);
-            if (complete_en_passant) break;
+            if (complete_en_passant) return;
         }
 
         printf("목표 위치 (y x): ");
@@ -57,12 +57,12 @@ void player2(ChessBoard *board, bool is_checked) {
 
         if (selectedPiece->type == 'k' && selectedPiece->moveHistory == 0 && !is_checked) {
             bool complete_castling = castling(board, selectedPiece, is_checked);
-            if (complete_castling) break;
+            if (complete_castling) return;
         }
 
         if (selectedPiece->type == 'p') {
             bool complete_en_passant = en_passant(board, selectedPiece);
-            if (complete_en_passant) break;
+            if (complete_en_passant) return;
         }
 
         printf("목표 위치 (y x): ");

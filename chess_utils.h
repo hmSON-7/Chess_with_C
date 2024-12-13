@@ -49,8 +49,8 @@ void update_all_moves(ChessBoard* board, Piece* king);
 bool is_king_safe(ChessBoard* board, Piece* king);
 bool simulate_move_and_check_safety(ChessBoard* board, Piece* p, Piece* king);
 Piece* find_king(ChessBoard* board, char currentPlayer);
-char* is_checkmate(ChessBoard* board, char currentPlayer);
-char* is_stalemate(ChessBoard* board, char currentPlayer);
+int is_checkmate(ChessBoard* board, char currentPlayer);
+int is_stalemate(ChessBoard* board, char currentPlayer);
 
 // chess_move_edited.c
 bool is_within_board(int y, int x);

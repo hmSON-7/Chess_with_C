@@ -232,8 +232,19 @@ bool display_valid_moves(ChessBoard *board, Position from, char currentPlayer) {
 // 이동 함수
 bool move_piece(ChessBoard *board, Position from, Position to, char currentPlayer) {
     if(!is_within_board(to.y, to.x)) return false;
+    Piece *currentPiece = &board->board[from.y][from.x];
+    bool check_move = false;
+    for(int i=0; i<currentPiece->moveCount; i++) {
+        if(currentPiece->possibleMove[i].y == to.y &&
+           currentPiece->possibleMove[i].x == to.x) {
+            check_move = true;
+            break;
+        }
+    }
+    if(!check_move) return false;
+
     Piece *dest = &board->board[to.y][to.x];
-    if(dest->color == currentPlayer) return false;
+    if(dest->type != '.' && dest->color == currentPlayer) return false;
     Piece *current = &board->board[from.y][from.x];
 
     // 도착 위치로 기물 이동

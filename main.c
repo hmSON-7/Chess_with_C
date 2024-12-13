@@ -95,7 +95,7 @@ int main(){
     system("cls"); // 화면 지우기
 
     initialize_board(&board); // 체스판 초기화
-    int turn;
+    int turn, gameFlag, drawFlag;
     bool is_checked;
 
     do {
@@ -108,21 +108,23 @@ int main(){
         char currentPlayer = (turn % 2 == 1) ? 'w' : 'b';
 
         // 체크메이트 상태 확인
-        char* gameFlag = is_checkmate(&board, currentPlayer);
-        if (strcmp(gameFlag, "checkmate") == 0) {
-            display_game_result(&board, currentPlayer, &gameFlag);
+        gameFlag = is_checkmate(&board, currentPlayer);
+        if (gameFlag == 2) {
+            display_game_result(&board, currentPlayer, "checkmate");
             return 0; // 게임 종료
         }
-        if (strcmp(gameFlag, "check") == 0) {
+        if (gameFlag == 1) {
             printf("경고: 현재 %s 플레이어가 체크 상태입니다!\n", currentPlayer == 'w' ? "백" : "흑");
             is_checked = true;
+        } else {
+            is_checked = false;
         }
 
         if(!is_checked) {
             // 스테일메이트 상태 확인
-            char* drawFlag = is_stalemate(&board, currentPlayer);
-            if (strcmp(drawFlag, "stalemate") == 0) {
-                display_game_result(&board, currentPlayer, &drawFlag);
+            drawFlag = is_stalemate(&board, currentPlayer);
+            if (drawFlag == -1) {
+                display_game_result(&board, currentPlayer, "stalemate");
                 return 0; // 게임 종료
             }
         }

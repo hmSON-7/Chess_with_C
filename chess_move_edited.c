@@ -27,14 +27,14 @@ void is_valid_knight_move(ChessBoard *board, Piece *piece) {
     piece->moveCount = 0;
 
     for (int i = 0; i < 8; i++) {
-        int newX = piece->pos.x + knight_directions[i][0];
-        int newY = piece->pos.y + knight_directions[i][1];
+        int newX = piece->pos.x + knight_directions[i][1];
+        int newY = piece->pos.y + knight_directions[i][0];
 
         if (!is_within_board(newY, newX)) continue;
 
         Piece *to_piece = &board->board[newY][newX];
         if (to_piece->type == '.' || to_piece->color != piece->color) {
-            piece->possibleMove[piece->moveCount++] = (Position){newY, newX};
+            piece->possibleMove[(piece->moveCount)++] = (Position){newY, newX};
         }
     }
 }
@@ -44,8 +44,8 @@ void is_valid_rook_move(ChessBoard *board, Piece *piece) {
     piece->moveCount = 0;
 
     for (int i = 0; i < 4; i++) {
-        int dx = rook_directions[i][0];
-        int dy = rook_directions[i][1];
+        int dx = rook_directions[i][1];
+        int dy = rook_directions[i][0];
         int x = piece->pos.x;
         int y = piece->pos.y;
 
@@ -57,7 +57,7 @@ void is_valid_rook_move(ChessBoard *board, Piece *piece) {
 
             // 이동 가능한 경우 위치 저장
             if (to_piece->type == '.' || to_piece->color != piece->color) {
-                piece->possibleMove[piece->moveCount++] = (Position){y, x};
+                piece->possibleMove[(piece->moveCount)++] = (Position){y, x};
             }
 
             // 기물이 있으면 탐색 종료
@@ -81,7 +81,7 @@ void is_valid_pawn_move(ChessBoard *board, Piece *piece) {
 
     if (is_within_board(y + direction, x) &&
         board->board[y + direction][x].type == '.') {
-        piece->possibleMove[piece->moveCount++] = (Position){y + direction, x};
+        piece->possibleMove[(piece->moveCount)++] = (Position){y + direction, x};
     }
 
     if (y == start_row &&
@@ -89,14 +89,14 @@ void is_valid_pawn_move(ChessBoard *board, Piece *piece) {
         board->board[y + direction][x].type == '.' &&
         board->board[y + 2 * direction][x].type == '.')
         {
-        piece->possibleMove[piece->moveCount++] = (Position){y + 2 * direction, x};
+        piece->possibleMove[(piece->moveCount)++] = (Position){y + 2 * direction, x};
     }
 
     for (int dx = -1; dx <= 1; dx += 2) {
         if (is_within_board(y + direction, x + dx)) {
             Piece *target_piece = &board->board[y + direction][x + dx];
             if (target_piece->type != '.' && target_piece->color != piece->color) {
-                piece->possibleMove[piece->moveCount++] = (Position){y + direction, x + dx};
+                piece->possibleMove[(piece->moveCount)++] = (Position){y + direction, x + dx};
             }
         }
     }
@@ -107,8 +107,8 @@ void is_valid_bishop_move(ChessBoard *board, Piece *piece) {
     piece->moveCount = 0;
 
     for (int i = 0; i < 4; i++) {
-        int dx = bishop_directions[i][0];
-        int dy = bishop_directions[i][1];
+        int dx = bishop_directions[i][1];
+        int dy = bishop_directions[i][0];
         int x = piece->pos.x;
         int y = piece->pos.y;
 
@@ -120,7 +120,7 @@ void is_valid_bishop_move(ChessBoard *board, Piece *piece) {
 
             // 이동 가능한 경우 위치 저장
             if (to_piece->type == '.' || to_piece->color != piece->color) {
-                piece->possibleMove[piece->moveCount++] = (Position){y, x};
+                piece->possibleMove[(piece->moveCount)++] = (Position){y, x};
             }
 
             // 기물이 있으면 탐색 종료
@@ -138,8 +138,8 @@ void is_valid_queen_move(ChessBoard *board, Piece *piece) {
 
     // 퀸의 8방향 탐색
     for (int i = 0; i < 8; i++) {
-        int dx = queen_directions[i][0];
-        int dy = queen_directions[i][1];
+        int dx = queen_directions[i][1];
+        int dy = queen_directions[i][0];
         int x = piece->pos.x;
         int y = piece->pos.y;
 
@@ -151,7 +151,7 @@ void is_valid_queen_move(ChessBoard *board, Piece *piece) {
 
             // 이동 가능한 경우 위치 저장
             if (to_piece->type == '.' || to_piece->color != piece->color) {
-                piece->possibleMove[piece->moveCount++] = (Position){y, x};
+                piece->possibleMove[(piece->moveCount)++] = (Position){y, x};
             }
 
             // 기물이 있으면 탐색 종료
@@ -167,15 +167,24 @@ void is_valid_king_move(ChessBoard *board, Piece *piece) {
     piece->moveCount = 0;
 
     for (int i = 0; i < 8; i++) {
-        int newX = piece->pos.x + king_directions[i][0];
-        int newY = piece->pos.y + king_directions[i][1];
+        int newX = piece->pos.x + king_directions[i][1];
+        int newY = piece->pos.y + king_directions[i][0];
 
         if (!is_within_board(newY, newX)) continue;
 
         Piece *to_piece = &board->board[newY][newX];
-        if (to_piece->type == '.' || to_piece->color != piece->color) {
-            piece->possibleMove[piece->moveCount++] = (Position){newY, newX};
+        // 아군 기물이 있는 경우 이동 불가능
+        if (to_piece->type != '.' && to_piece->color == piece->color) {
+            continue;
         }
+        // 상대 기물이 있는 경우 공격 가능
+        if (to_piece->type != '.' && to_piece->color != piece->color) {
+            piece->possibleMove[(piece->moveCount)++] = (Position){newY, newX};
+            continue;
+        }
+
+        // 빈 칸으로 이동 가능
+        piece->possibleMove[(piece->moveCount)++] = (Position){newY, newX};
     }
 }
 
@@ -232,11 +241,11 @@ bool display_valid_moves(ChessBoard *board, Position from, char currentPlayer) {
 // 이동 함수
 bool move_piece(ChessBoard *board, Position from, Position to, char currentPlayer) {
     if(!is_within_board(to.y, to.x)) return false;
-    Piece *currentPiece = &board->board[from.y][from.x];
+    Piece *current = &board->board[from.y][from.x];
     bool check_move = false;
-    for(int i=0; i<currentPiece->moveCount; i++) {
-        if(currentPiece->possibleMove[i].y == to.y &&
-           currentPiece->possibleMove[i].x == to.x) {
+    for(int i=0; i<current->moveCount; i++) {
+        if(current->possibleMove[i].y == to.y &&
+           current->possibleMove[i].x == to.x) {
             check_move = true;
             break;
         }
@@ -244,12 +253,11 @@ bool move_piece(ChessBoard *board, Position from, Position to, char currentPlaye
     if(!check_move) return false;
 
     Piece *dest = &board->board[to.y][to.x];
-    if(dest->type != '.' && dest->color == currentPlayer) return false;
-    Piece *current = &board->board[from.y][from.x];
+    if(dest->type != '.' && dest->color == current->color) return false;
 
     // 도착 위치로 기물 이동
     dest->type = current->type;
-    dest->color = currentPlayer;
+    dest->color = current->color;
     dest->moveHistory = current->moveHistory+1;
     dest->latestMovedTurn = board->turn;
 
@@ -261,6 +269,6 @@ bool move_piece(ChessBoard *board, Position from, Position to, char currentPlaye
     current->latestMovedTurn = -1;
 
     printf("기물 '%c' 색 '%c'가 좌표 (%d, %d)에서 (%d, %d)로 이동했습니다.\n",
-           dest->type, dest->color, from.x, from.y, to.x, to.y);
+           dest->type, dest->color, from.y, from.x, to.y, to.x);
     return true;
 }

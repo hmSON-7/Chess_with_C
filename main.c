@@ -148,30 +148,6 @@ int main(){
 
     } while (true);
 
-    /*
-    // 게임 종료 여부 확인
-    do {
-        printf("\nPress Enter To Continue! \n패배를 인정하시겠습니까? (q):  \n다시 시작하겠습니까? (enter) : ");
-        ch1 = getch(); // 키 입력 대기
-    } while (ch1 == 13); // Enter 키가 눌릴 때까지 반복
-
-    if (ch1 == 'q' || ch1 == 'Q') {
-        system("cls");
-        if (turn % 2 == 1) {
-            printf("흑이 승리했습니다!\n");
-        } else {
-            printf("백이 승리했습니다!\n");
-        }
-        printf("게임을 종료합니다.\n");
-        return 0; // 게임 종료
-    } else if (ch1 == 'r' || ch1 == 'R') {
-        system("cls");
-        printf("게임을 처음부터 다시 시작합니다...\n");
-        getch(); // 엔터를 기다림
-        turn = 0; // 턴 수 초기화
-        initialize_board(&board); // 체스판 초기화
-    }*/
-
     return 0; // 프로그램 종료
 }
 

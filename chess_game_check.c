@@ -19,7 +19,6 @@ void calculate_move(ChessBoard* board, Piece* p) {
                 int newY = p->pos.y + pawn_directions[i][0];
                 int newX = p->pos.x + pawn_directions[i][1];
                 if(!is_within_board(newY, newX) || possible_attack[newY][newX]) continue;
-                if(board->board[newY][newX].type != '.' && board->board[newY][newX].color == p->color) continue;
 
                 possible_attack[newY][newX] = true;
             }
@@ -31,18 +30,16 @@ void calculate_move(ChessBoard* board, Piece* p) {
                     newY += rook_directions[i][0];
                     newX += rook_directions[i][1];
                     if(!is_within_board(newY, newX)) break;
-                    if(board->board[newY][newX].type != '.' && board->board[newY][newX].color == p->color) break;
                     possible_attack[newY][newX] = true;
                     if(board->board[newY][newX].type != '.') break;
                 }
             }
             return;
         case 'n':
-            for(int i=0; i<2; i++) {
+            for(int i=0; i<8; i++) {
                 int newY = p->pos.y + knight_directions[i][0];
                 int newX = p->pos.x + knight_directions[i][1];
                 if(!is_within_board(newY, newX) || possible_attack[newY][newX]) continue;
-                if(board->board[newY][newX].type != '.' && board->board[newY][newX].color == p->color) continue;
 
                 possible_attack[newY][newX] = true;
             }
@@ -54,7 +51,6 @@ void calculate_move(ChessBoard* board, Piece* p) {
                     newY += bishop_directions[i][0];
                     newX += bishop_directions[i][1];
                     if(!is_within_board(newY, newX)) break;
-                    if(board->board[newY][newX].type != '.' && board->board[newY][newX].color == p->color) break;
                     possible_attack[newY][newX] = true;
                     if(board->board[newY][newX].type != '.') break;
                 }
@@ -67,18 +63,16 @@ void calculate_move(ChessBoard* board, Piece* p) {
                     newY += queen_directions[i][0];
                     newX += queen_directions[i][1];
                     if(!is_within_board(newY, newX)) break;
-                    if(board->board[newY][newX].type != '.' && board->board[newY][newX].color == p->color) break;
                     possible_attack[newY][newX] = true;
                     if(board->board[newY][newX].type != '.') break;
                 }
             }
             return;
         case 'k':
-            for(int i=0; i<2; i++) {
+            for(int i=0; i<8; i++) {
                 int newY = p->pos.y + king_directions[i][0];
                 int newX = p->pos.x + king_directions[i][1];
                 if(!is_within_board(newY, newX) || possible_attack[newY][newX]) continue;
-                if(board->board[newY][newX].type != '.' && board->board[newY][newX].color == p->color) continue;
 
                 possible_attack[newY][newX] = true;
             }
@@ -92,8 +86,9 @@ void calculate_move(ChessBoard* board, Piece* p) {
 void update_all_moves(ChessBoard* board, Piece* king) {
     for(int i=0; i<BOARD_SIZE; i++) {
         for(int j=0; j<BOARD_SIZE; j++) {
-            if(board->board[i][j].type == '.' || board->board[i][j].color == king->color) continue;
-            calculate_move(board, &board->board[i][j]);
+            Piece* piece = &board->board[i][j];
+            if (piece->type == '.' || piece->color == king->color) continue;
+            calculate_move(board, piece);
         }
     }
 }
@@ -106,8 +101,7 @@ bool is_king_safe(ChessBoard* board, Piece* king) {
     }
 
     update_all_moves(board, king);
-    if(possible_attack[king->pos.y][king->pos.x]) return false;
-    return true;
+    return !possible_attack[king->pos.y][king->pos.x];
 }
 
 bool simulate_move_and_check_safety(ChessBoard* board, Piece* p, Piece* king) {
@@ -193,7 +187,7 @@ int is_checkmate(ChessBoard* board, char currentPlayer) {
         int newY = king->pos.y + king_directions[i][0];
         int newX = king->pos.x + king_directions[i][1];
         if(!is_within_board(newY, newX)) continue;
-        if(board->board[newY][newX].color = currentPlayer) continue;
+        if(board->board[newY][newX].color == currentPlayer) continue;
         if(!possible_attack[newY][newX]) return 1;
     }
 
@@ -212,10 +206,17 @@ int is_checkmate(ChessBoard* board, char currentPlayer) {
 
 int is_stalemate(ChessBoard* board, char currentPlayer) {
     Piece* king = find_king(board, currentPlayer);
+    for(int i=0; i<BOARD_SIZE; i++) {
+        for(int j=0; j<BOARD_SIZE; j++) {
+            possible_attack[i][j] = false;
+        }
+    }
+    update_all_moves(board, king);
+
     for(int i=0; i<8; i++) {
         int newY = king->pos.y + king_directions[i][0];
         int newX = king->pos.x + king_directions[i][1];
-        if(is_within_board(newY, newX)) continue;
+        if(!is_within_board(newY, newX)) continue;
         if(board->board[newY][newX].type != '.' && board->board[newY][newX].color == king->color) continue;
         if(!possible_attack[newY][newX]) return 0;
     }
@@ -223,8 +224,28 @@ int is_stalemate(ChessBoard* board, char currentPlayer) {
     for(int i=0; i<BOARD_SIZE; i++) {
         for(int j=0; j<BOARD_SIZE; j++) {
             if(board->board[i][j].type == '.' || board->board[i][j].color != king->color) continue;
-            Piece p = board->board[i][j];
-            if(p.moveCount != 0) return 0;
+            Piece *piece = &board->board[i][j];
+            // 기물 타입별로 해당 검증 함수 호출
+            if (piece->type == 'n') {
+                is_valid_knight_move(board, piece);
+            }
+            else if (piece->type == 'r') {
+                is_valid_rook_move(board, piece);
+            }
+            else if (piece->type == 'b') {
+                is_valid_bishop_move(board, piece);
+            }
+            else if (piece->type == 'q') {
+                is_valid_queen_move(board, piece);
+            }
+            else if (piece->type == 'k') {
+                is_valid_king_move(board, piece);
+            }
+            else if (piece->type == 'p') {
+                is_valid_pawn_move(board, piece);
+            }
+
+            if(piece->moveCount > 0) return 0; // 이동 가능한 기물이 있음
         }
     }
 

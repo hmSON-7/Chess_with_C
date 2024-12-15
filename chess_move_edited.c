@@ -173,16 +173,18 @@ void is_valid_king_move(ChessBoard *board, Piece *piece) {
         if (!is_within_board(newY, newX)) continue;
 
         Piece *to_piece = &board->board[newY][newX];
-        // 상대 기물이 있는 위치는 공격 가능해야 함
-        if (to_piece->type != '.' && to_piece->color != king->color) {
-            king->possibleMove[king->moveCount++] = (Position){newY, newX};
-            continue;  // 이동 가능 위치로 추가한 후 다음 방향 탐색
+        // 아군 기물이 있는 경우 이동 불가능
+        if (to_piece->type != '.' && to_piece->color == piece->color) {
+            continue;
+        }
+        // 상대 기물이 있는 경우 공격 가능
+        if (to_piece->type != '.' && to_piece->color != piece->color) {
+            piece->possibleMove[(piece->moveCount)++] = (Position){newY, newX};
+            continue;
         }
 
-        // 빈 칸인 경우 이동 경로에 포함
-        if (to_piece->type == '.' && is_king_safe_after_move(board, king, newY, newX)) {
-            king->possibleMove[king->moveCount++] = (Position){newY, newX};
-        }
+        // 빈 칸으로 이동 가능
+        piece->possibleMove[(piece->moveCount)++] = (Position){newY, newX};
     }
 }
 
